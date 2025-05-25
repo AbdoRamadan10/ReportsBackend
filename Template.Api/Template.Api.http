@@ -1,0 +1,10 @@
+@Template.Api_HostAddress = http://localhost:5191
+
+
+GET {{Template.Api_HostAddress}}/api/products?pageNumber=1&pageSize=10&sortBy=Name&sortDescending=true&searchTerm=phone&filters.Status=Active&filters.Price=10
+Accept: application/json
+
+
+
+
+###

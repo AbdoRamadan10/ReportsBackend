@@ -1,0 +1,62 @@
+﻿using AutoMapper;
+using ReportsBackend.Application.DTOs.Product;
+using ReportsBackend.Application.DTOs.Report;
+using ReportsBackend.Domain.Entities;
+using ReportsBackend.Domain.Helpers;
+using ReportsBackend.Domain.Interfaces;
+
+namespace ReportsBackend.Application.Services
+{
+    public class ReportService
+    {
+        private readonly IGenericRepository<Report> _reportRepository;
+        private readonly IMapper _mapper;
+
+        public ReportService(IGenericRepository<Report> reportRepository, IMapper mapper)
+        {
+            _reportRepository = reportRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<PaginatedResult<ReportDto>> GetAllAsync(FindOptions options)
+        {
+            var reports = await _reportRepository.GetAllAsync(options);
+            return new PaginatedResult<ReportDto>
+            {
+                Items = _mapper.Map<IEnumerable<ReportDto>>(reports.Items),
+                PageNumber = reports.PageNumber,
+                PageSize = reports.PageSize,
+                TotalCount = reports.TotalCount,
+
+            };
+        }
+
+        //public async Task<ReportDto> GetByIdAsync(int id)
+        //{
+        //    var report = await _reportRepository.GetByIdAsync(id);
+        //    return _mapper.Map<ReportDto>(report);
+        //}
+
+        public async Task<ReportDto> CreateAsync(ReportCreateDto dto)
+        {
+            var report = _mapper.Map<Report>(dto);
+            await _reportRepository.AddAsync(report);
+            return _mapper.Map<ReportDto>(report);
+        }
+
+        //public async Task UpdateAsync(int id, ReportUpdateDto dto)
+        //{
+        //    var report = await _reportRepository.GetByIdAsync(id);
+        //    if (report == null) throw new KeyNotFoundException();
+        //    _mapper.Map(dto, report);
+        //    await _reportRepository.Update(report);
+        //}
+
+        //public async Task DeleteAsync(int id)
+        //{
+        //    var report = await _reportRepository.GetByIdAsync(id);
+        //    if (report == null) throw new KeyNotFoundException();
+        //    await _reportRepository.Delete(report);
+        //}
+    }
+}
