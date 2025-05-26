@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using ReportsBackend.Api.Middleware;
 using ReportsBackend.Application.Extensions;
 using ReportsBackend.Infrastracture.Data.Context;
 using ReportsBackend.Infrastracture.Extensions;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 
@@ -44,6 +46,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 var app = builder.Build();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

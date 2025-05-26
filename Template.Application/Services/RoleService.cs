@@ -4,6 +4,7 @@ using ReportsBackend.Application.DTOs.Report;
 using ReportsBackend.Application.DTOs.Role;
 using ReportsBackend.Application.DTOs.Screen;
 using ReportsBackend.Domain.Entities;
+using ReportsBackend.Domain.Exceptions;
 using ReportsBackend.Domain.Helpers;
 using ReportsBackend.Domain.Interfaces;
 using System.Collections.Generic;
@@ -45,6 +46,8 @@ namespace ReportsBackend.Application.Services
         public async Task<RoleDto> GetByIdAsync(int id)
         {
             var role = await _roleRepository.GetByIdAsync(id);
+            if (role == null)
+                throw new NotFoundException("Role", id.ToString());
             return _mapper.Map<RoleDto>(role);
         }
 
