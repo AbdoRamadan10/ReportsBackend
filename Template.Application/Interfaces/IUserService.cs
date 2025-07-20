@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ReportsBackend.Application.DTOs.Auth;
 using ReportsBackend.Domain.Entities;
+using ReportsBackend.Application.DTOs.Role;
 
 namespace ReportsBackend.Application.Interfaces
 {
@@ -15,6 +16,10 @@ namespace ReportsBackend.Application.Interfaces
         Task<User> Register(RegisterRequest request);
         Task<bool> EmailExists(string email);
         Task<bool> UsernameExists(string username);
+
+        Task<ICollection<RoleDto>> GetUserRoles(int userId);
+
+
 
     }
 }

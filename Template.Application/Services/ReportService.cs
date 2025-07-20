@@ -2,8 +2,10 @@
 using ReportsBackend.Application.DTOs.Product;
 using ReportsBackend.Application.DTOs.Report;
 using ReportsBackend.Domain.Entities;
+using ReportsBackend.Domain.Exceptions;
 using ReportsBackend.Domain.Helpers;
 using ReportsBackend.Domain.Interfaces;
+using System.Data;
 
 namespace ReportsBackend.Application.Services
 {
@@ -31,11 +33,13 @@ namespace ReportsBackend.Application.Services
             };
         }
 
-        //public async Task<ReportDto> GetByIdAsync(int id)
-        //{
-        //    var report = await _reportRepository.GetByIdAsync(id);
-        //    return _mapper.Map<ReportDto>(report);
-        //}
+        public async Task<ReportDto> GetByIdAsync(int id)
+        {
+            var report = await _reportRepository.GetByIdAsync(id);
+            if (report == null)
+                throw new NotFoundException("Report", id.ToString());
+            return _mapper.Map<ReportDto>(report);
+        }
 
         public async Task<ReportDto> CreateAsync(ReportCreateDto dto)
         {
@@ -44,19 +48,21 @@ namespace ReportsBackend.Application.Services
             return _mapper.Map<ReportDto>(report);
         }
 
-        //public async Task UpdateAsync(int id, ReportUpdateDto dto)
-        //{
-        //    var report = await _reportRepository.GetByIdAsync(id);
-        //    if (report == null) throw new KeyNotFoundException();
-        //    _mapper.Map(dto, report);
-        //    await _reportRepository.Update(report);
-        //}
+        public async Task UpdateAsync(int id, ReportUpdateDto dto)
+        {
+            var report = await _reportRepository.GetByIdAsync(id);
+            if (report == null)
+                throw new NotFoundException("Report", id.ToString());
+            _mapper.Map(dto, report);
+            await _reportRepository.Update(report);
+        }
 
-        //public async Task DeleteAsync(int id)
-        //{
-        //    var report = await _reportRepository.GetByIdAsync(id);
-        //    if (report == null) throw new KeyNotFoundException();
-        //    await _reportRepository.Delete(report);
-        //}
+        public async Task DeleteAsync(int id)
+        {
+            var report = await _reportRepository.GetByIdAsync(id);
+            if (report == null)
+                throw new NotFoundException("Report", id.ToString());
+            await _reportRepository.Delete(report);
+        }
     }
 }

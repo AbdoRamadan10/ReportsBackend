@@ -17,7 +17,6 @@ namespace ReportsBackend.Application.Extensions
             var applicationAssemply = typeof(ServiceCollectionExtensions).Assembly;
             services.AddAutoMapper(applicationAssemply);
 
-            services.AddScoped<ProductService>();
             services.AddScoped<ScreenService>();
             services.AddScoped<RoleService>();
             services.AddScoped<ReportService>();

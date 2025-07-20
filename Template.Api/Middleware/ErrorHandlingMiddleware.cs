@@ -22,6 +22,13 @@ namespace ReportsBackend.Api.Middleware
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 await context.Response.WriteAsync(ex.Message);
             }
+            catch (UnauthorizedException ex)
+            {
+                logger.LogWarning(ex.Message);
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync(ex.Message);
+            }
+
             catch (Exception ex)
             {
                 logger.LogError(ex, ex.Message);

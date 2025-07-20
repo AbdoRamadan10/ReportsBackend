@@ -27,13 +27,13 @@ namespace ReportsBackend.Api.Controllers
             return Ok(reports);
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<ReportDto>> Get(int id)
-        //{
-        //    var report = await _reportService.GetByIdAsync(id);
-        //    if (report == null) return NotFound();
-        //    return Ok(report);
-        //}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ReportDto>> Get(int id)
+        {
+            var report = await _reportService.GetByIdAsync(id);
+            if (report == null) return NotFound();
+            return Ok(report);
+        }
 
         [HttpPost]
         public async Task<ActionResult<ReportDto>> Create([FromBody] ReportCreateDto dto)
@@ -43,18 +43,18 @@ namespace ReportsBackend.Api.Controllers
             return Ok(created);
         }
 
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Update(int id, [FromBody] ReportUpdateDto dto)
-        //{
-        //    await _reportService.UpdateAsync(id, dto);
-        //    return NoContent();
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] ReportUpdateDto dto)
+        {
+            await _reportService.UpdateAsync(id, dto);
+            return NoContent();
+        }
 
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    await _reportService.DeleteAsync(id);
-        //    return NoContent();
-        //}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _reportService.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }

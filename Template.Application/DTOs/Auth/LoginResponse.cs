@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReportsBackend.Application.DTOs.Role;
+using ReportsBackend.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +12,6 @@ namespace ReportsBackend.Application.DTOs.Auth
     {
         public string Token { get; set; }
         public DateTime Expiration { get; set; }
+        public ICollection<RoleDto> Roles { get; set; } 
     }
 }

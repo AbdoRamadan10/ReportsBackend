@@ -61,7 +61,8 @@ namespace ReportsBackend.Application.Services
         public async Task UpdateAsync(int id, RoleUpdateDto dto)
         {
             var role = await _roleRepository.GetByIdAsync(id);
-            if (role == null) throw new KeyNotFoundException();
+            if (role == null)
+                throw new NotFoundException("Role", id.ToString());
             _mapper.Map(dto, role);
             await _roleRepository.Update(role);
         }
@@ -69,26 +70,26 @@ namespace ReportsBackend.Application.Services
         public async Task DeleteAsync(int id)
         {
             var role = await _roleRepository.GetByIdAsync(id);
-            if (role == null) throw new KeyNotFoundException();
+            if (role == null)
+                throw new NotFoundException("Role", id.ToString());
             await _roleRepository.Delete(role);
         }
 
-        public async Task<RoleAccessDto> GetReportsAndScreensAsync(int roleId)
+
+  public async Task<RoleAccessDto> GetReportsAndScreensAsync(int roleId)
         {
-            // Get the role with related screens and reports
-            var role = await _roleRepository
-                .GetAllAsync(
-                    new FindOptions { },
-                    q => q.Include(r => r.RoleScreens).ThenInclude(rs => rs.Screen)
-                          .Include(r => r.RoleReports).ThenInclude(rr => rr.Report).ThenInclude(r => r.Privilege)
-                );
+            // Get the role with related screens and reports by roleId
+            var role = await _roleRepository.GetByIdAsync(
+                roleId,
+                q => q.Include(r => r.RoleScreens).ThenInclude(rs => rs.Screen)
+                      .Include(r => r.RoleReports).ThenInclude(rr => rr.Report).ThenInclude(r => r.Privilege)
+            );
 
-            var roleEntity = role.Items.FirstOrDefault();
-            if (roleEntity == null)
-                return new RoleAccessDto { Screens = Enumerable.Empty<ScreenDto>(), Reports = Enumerable.Empty<ReportDto>() };
+            if (role == null)
+                throw new NotFoundException("Role", roleId.ToString());
 
-            var screens = roleEntity.RoleScreens?.Select(rs => rs.Screen) ?? Enumerable.Empty<Screen>();
-            var reports = roleEntity.RoleReports?.Select(rr => rr.Report) ?? Enumerable.Empty<Report>();
+            var screens = role.RoleScreens?.Select(rs => rs.Screen) ?? Enumerable.Empty<Screen>();
+            var reports = role.RoleReports?.Select(rr => rr.Report) ?? Enumerable.Empty<Report>();
 
             return new RoleAccessDto
             {

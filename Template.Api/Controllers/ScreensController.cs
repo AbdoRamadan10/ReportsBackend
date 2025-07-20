@@ -27,13 +27,13 @@ namespace ReportsBackend.Api.Controllers
             return Ok(screens);
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<ScreenDto>> Get(int id)
-        //{
-        //    var screen = await _screenService.GetByIdAsync(id);
-        //    if (screen == null) return NotFound();
-        //    return Ok(screen);
-        //}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ScreenDto>> Get(int id)
+        {
+            var screen = await _screenService.GetByIdAsync(id);
+            if (screen == null) return NotFound();
+            return Ok(screen);
+        }
 
         [HttpPost]
         public async Task<ActionResult<ScreenDto>> Create([FromBody] ScreenCreateDto dto)
@@ -43,18 +43,18 @@ namespace ReportsBackend.Api.Controllers
             return Ok(created);
         }
 
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Update(int id, [FromBody] ScreenUpdateDto dto)
-        //{
-        //    await _screenService.UpdateAsync(id, dto);
-        //    return NoContent();
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] ScreenUpdateDto dto)
+        {
+            await _screenService.UpdateAsync(id, dto);
+            return NoContent();
+        }
 
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    await _screenService.DeleteAsync(id);
-        //    return NoContent();
-        //}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _screenService.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }

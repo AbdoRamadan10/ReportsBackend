@@ -2,6 +2,7 @@
 using ReportsBackend.Application.DTOs.Role;
 using ReportsBackend.Application.DTOs.Screen;
 using ReportsBackend.Domain.Entities;
+using ReportsBackend.Domain.Exceptions;
 using ReportsBackend.Domain.Helpers;
 using ReportsBackend.Domain.Interfaces;
 using System.Collections.Generic;
@@ -34,11 +35,13 @@ namespace ReportsBackend.Application.Services
             };
         }
 
-        //public async Task<ScreenDto> GetByIdAsync(int id)
-        //{
-        //    var screen = await _screenRepository.GetByIdAsync(id);
-        //    return _mapper.Map<ScreenDto>(screen);
-        //}
+        public async Task<ScreenDto> GetByIdAsync(int id)
+        {
+            var screen = await _screenRepository.GetByIdAsync(id);
+            if (screen == null)
+                throw new NotFoundException("Screen", id.ToString());
+            return _mapper.Map<ScreenDto>(screen);
+        }
 
         public async Task<ScreenDto> CreateAsync(ScreenCreateDto dto)
         {
@@ -47,19 +50,21 @@ namespace ReportsBackend.Application.Services
             return _mapper.Map<ScreenDto>(screen);
         }
 
-        //public async Task UpdateAsync(int id, ScreenUpdateDto dto)
-        //{
-        //    var screen = await _screenRepository.GetByIdAsync(id);
-        //    if (screen == null) throw new KeyNotFoundException();
-        //    _mapper.Map(dto, screen);
-        //    await _screenRepository.Update(screen);
-        //}
+        public async Task UpdateAsync(int id, ScreenUpdateDto dto)
+        {
+            var screen = await _screenRepository.GetByIdAsync(id);
+            if (screen == null)
+                throw new NotFoundException("Screen", id.ToString());
+            _mapper.Map(dto, screen);
+            await _screenRepository.Update(screen);
+        }
 
-        //public async Task DeleteAsync(int id)
-        //{
-        //    var screen = await _screenRepository.GetByIdAsync(id);
-        //    if (screen == null) throw new KeyNotFoundException();
-        //    await _screenRepository.Delete(screen);
-        //}
+        public async Task DeleteAsync(int id)
+        {
+            var screen = await _screenRepository.GetByIdAsync(id);
+            if (screen == null)
+                throw new NotFoundException("Screen", id.ToString());
+            await _screenRepository.Delete(screen);
+        }
     }
 }

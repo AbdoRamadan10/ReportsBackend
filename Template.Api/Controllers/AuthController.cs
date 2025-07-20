@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReportsBackend.Application.DTOs.Auth;
 using ReportsBackend.Application.Interfaces;
+using ReportsBackend.Domain.Exceptions;
 
 namespace ReportsBackend.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -25,14 +26,18 @@ namespace ReportsBackend.Api.Controllers
             var user = await _userService.Authenticate(request.Username, request.Password);
 
             if (user == null)
-                return Unauthorized("Invalid credentials");
+                throw new UnauthorizedException("Invalid Credentials");
+
+            var userRoles = await _userService.GetUserRoles(user.Id);
 
             var token = _tokenService.GenerateToken(user);
 
             return Ok(new LoginResponse
             {
                 Token = token,
-                Expiration = DateTime.Now.AddMinutes(60) // Should match JWT settings
+                Expiration = DateTime.Now.AddMinutes(60),
+                Roles = userRoles
+
             });
         }
 

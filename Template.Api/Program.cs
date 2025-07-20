@@ -45,6 +45,53 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+if (builder.Environment.IsDevelopment())
+{
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowReactApp",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:5173") // Allow React app
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials(); // If using authentication
+            });
+    });
+
+
+}
+
+else
+{
+
+    builder.Services.AddCors(
+        options =>
+        {
+            options.AddPolicy("AllowReactApp", builder =>
+            builder.SetIsOriginAllowed(origin =>
+            {
+
+                try
+                {
+                    var uri = new Uri(origin);
+                    return uri.Host == "localhost" || uri.Host.StartsWith("192.168.40");
+
+                }
+                catch
+                {
+                    return false;
+                }
+            }).AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+        });
+
+
+
+}
+
 var app = builder.Build();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
@@ -61,6 +108,8 @@ using (var scope = app.Services.CreateScope())
     applicationDbcontext.Database.EnsureCreated();
     ApplicationInitializer.Initializer(applicationDbcontext);
 }
+
+app.UseCors("AllowReactApp");
 
 
 app.UseHttpsRedirection();
