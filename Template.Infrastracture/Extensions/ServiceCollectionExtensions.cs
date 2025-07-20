@@ -24,7 +24,10 @@ namespace ReportsBackend.Infrastracture.Extensions
         {
             // Add DbContext
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString).EnableSensitiveDataLogging());
+
+            //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString).EnableSensitiveDataLogging());
+            services.AddDbContext<ApplicationDbContext>(options => options.UseOracle(connectionString).EnableSensitiveDataLogging());
+      
 
 
             // Add Repositories
