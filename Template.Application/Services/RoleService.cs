@@ -17,17 +17,22 @@ namespace ReportsBackend.Application.Services
         private readonly IGenericRepository<Role> _roleRepository;
         private readonly IGenericRepository<Screen> _screenRepository;
         private readonly IGenericRepository<Report> _reportRepository;
+        private readonly IGenericRepository<UserRole> _userRoleRepository;
         private readonly IMapper _mapper;
 
         public RoleService(IGenericRepository<Role> roleRepository,
         IGenericRepository<Screen> screenRepository,
         IGenericRepository<Report> reportRepository,
+        IGenericRepository<UserRole> userRoleRepository,
         IMapper mapper)
         {
             _roleRepository = roleRepository;
             _mapper = mapper;
             _screenRepository = screenRepository;
             _reportRepository = reportRepository;
+            _userRoleRepository = userRoleRepository;
+
+
         }
 
         public async Task<PaginatedResult<RoleDto>> GetAllAsync(FindOptions options)
@@ -76,20 +81,63 @@ namespace ReportsBackend.Application.Services
         }
 
 
-  public async Task<RoleAccessDto> GetReportsAndScreensAsync(int roleId)
+          public async Task<RoleAccessDto> GetReportsAndScreensAsync(int roleId)
+                {
+                    // Get the role with related screens and reports by roleId
+                    var role = await _roleRepository.GetByIdAsync(
+                        roleId,
+                        q => q.Include(r => r.RoleScreens).ThenInclude(rs => rs.Screen)
+                              .Include(r => r.RoleReports).ThenInclude(rr => rr.Report).ThenInclude(r => r.Privilege)
+                    );
+
+                    if (role == null)
+                        throw new NotFoundException("Role", roleId.ToString());
+
+                    var screens = role.RoleScreens?.Select(rs => rs.Screen) ?? Enumerable.Empty<Screen>();
+                    var reports = role.RoleReports?.Select(rr => rr.Report) ?? Enumerable.Empty<Report>();
+
+                    return new RoleAccessDto
+                    {
+                        Screens = _mapper.Map<IEnumerable<ScreenDto>>(screens),
+                        Reports = _mapper.Map<IEnumerable<ReportDto>>(reports)
+                    };
+                }
+
+
+        public async Task<RoleAccessDto> GetUserReportsAndScreensAsync(int userId)
         {
-            // Get the role with related screens and reports by roleId
-            var role = await _roleRepository.GetByIdAsync(
-                roleId,
-                q => q.Include(r => r.RoleScreens).ThenInclude(rs => rs.Screen)
-                      .Include(r => r.RoleReports).ThenInclude(rr => rr.Report).ThenInclude(r => r.Privilege)
+            // Get all UserRole entries for the user, including related Role, RoleScreens, RoleReports, and their entities
+            var userRolesResult = await _userRoleRepository.GetAllAsync(
+                new FindOptions { },
+                q => q.Include(ur => ur.Role)
+                      .ThenInclude(r => r.RoleScreens)
+                          .ThenInclude(rs => rs.Screen)
+                      .Include(ur => ur.Role)
+                      .ThenInclude(r => r.RoleReports)
+                          .ThenInclude(rr => rr.Report)
+                              .ThenInclude(rp => rp.Privilege)
             );
 
-            if (role == null)
-                throw new NotFoundException("Role", roleId.ToString());
+            var roles = userRolesResult.Items
+                .Where(ur => ur.UserId == userId && ur.Role != null)
+                .Select(ur => ur.Role)
+                .ToList();
 
-            var screens = role.RoleScreens?.Select(rs => rs.Screen) ?? Enumerable.Empty<Screen>();
-            var reports = role.RoleReports?.Select(rr => rr.Report) ?? Enumerable.Empty<Report>();
+            var screens = roles
+                .SelectMany(r => r.RoleScreens ?? Enumerable.Empty<RoleScreen>())
+                .Select(rs => rs.Screen)
+                .Where(s => s != null)
+                .GroupBy(s => s.Id)
+                .Select(g => g.First())
+                .ToList();
+
+            var reports = roles
+                .SelectMany(r => r.RoleReports ?? Enumerable.Empty<RoleReport>())
+                .Select(rr => rr.Report)
+                .Where(rp => rp != null)
+                .GroupBy(rp => rp.Id)
+                .Select(g => g.First())
+                .ToList();
 
             return new RoleAccessDto
             {
@@ -97,5 +145,7 @@ namespace ReportsBackend.Application.Services
                 Reports = _mapper.Map<IEnumerable<ReportDto>>(reports)
             };
         }
+
+
     }
 }

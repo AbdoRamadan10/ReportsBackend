@@ -30,6 +30,7 @@ namespace ReportsBackend.Infrastracture.Services.Identity
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name,user.Username.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 //new Claim(ClaimTypes.Role, user.Role)
             };
@@ -37,7 +38,7 @@ namespace ReportsBackend.Infrastracture.Services.Identity
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryInMinutes),
+                Expires = DateTime.Now.AddMinutes(_jwtSettings.ExpiryInMinutes),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(_key),
                     SecurityAlgorithms.HmacSha256Signature),

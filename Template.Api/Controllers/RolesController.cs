@@ -63,5 +63,12 @@ namespace ReportsBackend.Api.Controllers
             var result = await _roleService.GetReportsAndScreensAsync(id);
             return Ok(result);
         }
+
+        [HttpGet("{userId}/userpermissions")]
+        public async Task<IActionResult> GetUserReportsAndScreens(int userId)
+        {
+            var result = await _roleService.GetUserReportsAndScreensAsync(userId);
+            return Ok(result);
+        }
     }
 }

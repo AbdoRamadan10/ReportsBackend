@@ -12,6 +12,8 @@ namespace ReportsBackend.Application.DTOs.Auth
     {
         public string Token { get; set; }
         public DateTime Expiration { get; set; }
-        public ICollection<RoleDto> Roles { get; set; } 
+        //public ICollection<RoleDto> Roles { get; set; }
+
+        public UserDto User { get; set; }
     }
 }

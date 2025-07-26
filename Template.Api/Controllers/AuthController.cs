@@ -36,7 +36,13 @@ namespace ReportsBackend.Api.Controllers
             {
                 Token = token,
                 Expiration = DateTime.Now.AddMinutes(60),
-                Roles = userRoles
+                //Roles = userRoles,
+                User = new UserDto
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email
+                }
 
             });
         }
