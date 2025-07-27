@@ -20,6 +20,7 @@ namespace ReportsBackend.Application.Extensions
             services.AddScoped<ScreenService>();
             services.AddScoped<RoleService>();
             services.AddScoped<ReportService>();
+            services.AddScoped<UserService>();
 
 
         }

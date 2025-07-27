@@ -23,7 +23,6 @@ namespace ReportsBackend.Infrastracture.Data.Context
         public DbSet<RoleReport> RoleReports { get; set; }
         public DbSet<Privilege> Privileges { get; set; }
 
-        public DbSet<Product> Products { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

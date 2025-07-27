@@ -92,16 +92,16 @@ namespace ReportsBackend.Api.Controllers
             var reports = reportsResult.Items.ToList();
 
             var columns = new List<ColumnDefinition<ReportDto>>
-{
-    new() { Header = "Id", ValueSelector = r => r.Id.ToString() },
-    new() { Header = "Name", ValueSelector = r => r.Name },
-    new() { Header = "Description", ValueSelector = r => r.Description },
-    new() { Header = "Path", ValueSelector = r => r.Path },
-    new() { Header = "PrivilegeId", ValueSelector = r => r.PrivilegeId.ToString() },
-    new() { Header = "PrivilegeName", ValueSelector = r => r.PrivilegeName }
-};
+                {
+                    new() { Header = "Id", ValueSelector = r => r.Id.ToString() },
+                    new() { Header = "Name", ValueSelector = r => r.Name },
+                    new() { Header = "Description", ValueSelector = r => r.Description },
+                    new() { Header = "Path", ValueSelector = r => r.Path },
+                    new() { Header = "PrivilegeId", ValueSelector = r => r.PrivilegeId.ToString() },
+                    new() { Header = "PrivilegeName", ValueSelector = r => r.PrivilegeName }
+                };
 
-            if (format.ToLower() == "excel" || format.ToLower() == "xlsx")
+            if (format.ToLower() == "excel" || format.ToLower() == "xlsx" || format.ToLower() == "csv")
             {
                 var excelBytes = ExcelExportHelper.GenerateTableExcel(reports, columns, "Reports Export");
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "reports_export.xlsx");

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ReportsBackend.Application.DTOs.Product;
+using Microsoft.EntityFrameworkCore;
 using ReportsBackend.Application.DTOs.Report;
 using ReportsBackend.Domain.Entities;
 using ReportsBackend.Domain.Exceptions;
@@ -22,7 +22,7 @@ namespace ReportsBackend.Application.Services
 
         public async Task<PaginatedResult<ReportDto>> GetAllAsync(FindOptions options)
         {
-            var reports = await _reportRepository.GetAllAsync(options);
+            var reports = await _reportRepository.GetAllAsync(options, q => q.Include(t => t.Privilege));
             return new PaginatedResult<ReportDto>
             {
                 Items = _mapper.Map<IEnumerable<ReportDto>>(reports.Items),
@@ -35,7 +35,7 @@ namespace ReportsBackend.Application.Services
 
         public async Task<ReportDto> GetByIdAsync(int id)
         {
-            var report = await _reportRepository.GetByIdAsync(id);
+            var report = await _reportRepository.GetByIdAsync(id, q => q.Include(t => t.Privilege));
             if (report == null)
                 throw new NotFoundException("Report", id.ToString());
             return _mapper.Map<ReportDto>(report);

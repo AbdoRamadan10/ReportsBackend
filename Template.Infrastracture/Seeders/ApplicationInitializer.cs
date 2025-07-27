@@ -12,7 +12,7 @@ namespace ReportsBackend.Infrastracture.Seeders
         public static void Initializer(ApplicationDbContext context)
         {
             context.Database.EnsureCreated();
-            ProductSeeds.ProductInitializer(context);
+            ScreenSeeds.ScreenInitializer(context);
             context.SaveChanges();
         }
 

@@ -26,7 +26,7 @@ namespace ReportsBackend.Infrastracture.Repositories
         {
             IQueryable<T> query = _dbSet;
 
-            if (includes != null)   
+            if (includes != null)
             {
                 foreach (var include in includes)
                 {
@@ -63,6 +63,8 @@ namespace ReportsBackend.Infrastracture.Repositories
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
+
+
 
         public Task<T> GetByIdAsync(int id, params Func<IQueryable<T>, IQueryable<T>>[] includes)
         {
