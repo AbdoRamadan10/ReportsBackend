@@ -53,7 +53,7 @@ if (builder.Environment.IsDevelopment())
         options.AddPolicy("AllowReactApp",
             policy =>
             {
-                policy.WithOrigins("http://localhost:5173") // Allow React app
+                policy.WithOrigins("http://localhost:8080") // Allow React app
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials(); // If using authentication
