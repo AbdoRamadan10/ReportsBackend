@@ -9,7 +9,7 @@ using ReportsBackend.Domain.Helpers;
 namespace ReportsBackend.Api.Controllers
 {
     [ApiController]
-    [Route("admin/roles")]
+    [Route("api/roles")]
     //[Authorize]
     public class RolesController : ControllerBase
     {

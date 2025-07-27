@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using ReportsBackend.Api.Middleware;
 using ReportsBackend.Application.Extensions;
 using ReportsBackend.Infrastracture.Data.Context;
@@ -91,6 +92,9 @@ else
 
 
 }
+
+// Accept QuestPDF license
+QuestPDF.Settings.License = LicenseType.Community;
 
 var app = builder.Build();
 app.UseMiddleware<ErrorHandlingMiddleware>();

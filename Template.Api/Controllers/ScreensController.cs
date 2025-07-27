@@ -9,7 +9,7 @@ using ReportsBackend.Domain.Helpers;
 namespace ReportsBackend.Api.Controllers
 {
     [ApiController]
-    [Route("admin/screens")]
+    [Route("api/screens")]
     //[Authorize]
     public class ScreensController : ControllerBase
     {
