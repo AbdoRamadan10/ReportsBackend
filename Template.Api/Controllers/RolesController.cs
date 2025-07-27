@@ -70,5 +70,20 @@ namespace ReportsBackend.Api.Controllers
             var result = await _roleService.GetUserReportsAndScreensAsync(userId);
             return Ok(result);
         }
+
+        [HttpPost("assign-screens-to-role")]
+        public async Task<IActionResult> AssignScreensToRoleAsync(int roleId, List<int> screenIds)
+        {
+            await _roleService.AssignScreenToRoleAsync(roleId, screenIds);
+            return Ok("Screens have been assigned successfully");
+        }
+
+        [HttpPost("assign-reports-to-role")]
+        public async Task<IActionResult> AssignReportsToRoleAsync(int roleId, List<int> screenIds)
+        {
+            await _roleService.AssignReportToRoleAsync(roleId, screenIds);
+            return Ok("Screens have been assigned successfully");
+        }
+
     }
 }

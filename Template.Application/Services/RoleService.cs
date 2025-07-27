@@ -81,27 +81,27 @@ namespace ReportsBackend.Application.Services
         }
 
 
-          public async Task<RoleAccessDto> GetReportsAndScreensAsync(int roleId)
-                {
-                    // Get the role with related screens and reports by roleId
-                    var role = await _roleRepository.GetByIdAsync(
-                        roleId,
-                        q => q.Include(r => r.RoleScreens).ThenInclude(rs => rs.Screen)
-                              .Include(r => r.RoleReports).ThenInclude(rr => rr.Report).ThenInclude(r => r.Privilege)
-                    );
+        public async Task<RoleAccessDto> GetReportsAndScreensAsync(int roleId)
+        {
+            // Get the role with related screens and reports by roleId
+            var role = await _roleRepository.GetByIdAsync(
+                roleId,
+                q => q.Include(r => r.RoleScreens).ThenInclude(rs => rs.Screen)
+                      .Include(r => r.RoleReports).ThenInclude(rr => rr.Report).ThenInclude(r => r.Privilege)
+            );
 
-                    if (role == null)
-                        throw new NotFoundException("Role", roleId.ToString());
+            if (role == null)
+                throw new NotFoundException("Role", roleId.ToString());
 
-                    var screens = role.RoleScreens?.Select(rs => rs.Screen) ?? Enumerable.Empty<Screen>();
-                    var reports = role.RoleReports?.Select(rr => rr.Report) ?? Enumerable.Empty<Report>();
+            var screens = role.RoleScreens?.Select(rs => rs.Screen) ?? Enumerable.Empty<Screen>();
+            var reports = role.RoleReports?.Select(rr => rr.Report) ?? Enumerable.Empty<Report>();
 
-                    return new RoleAccessDto
-                    {
-                        Screens = _mapper.Map<IEnumerable<ScreenDto>>(screens),
-                        Reports = _mapper.Map<IEnumerable<ReportDto>>(reports)
-                    };
-                }
+            return new RoleAccessDto
+            {
+                Screens = _mapper.Map<IEnumerable<ScreenDto>>(screens),
+                Reports = _mapper.Map<IEnumerable<ReportDto>>(reports)
+            };
+        }
 
 
         public async Task<RoleAccessDto> GetUserReportsAndScreensAsync(int userId)
@@ -146,6 +146,72 @@ namespace ReportsBackend.Application.Services
             };
         }
 
+        public async Task AssignScreenToRoleAsync(int roleId, List<int> screenIds)
+        {
+            var role = await _roleRepository.GetByIdAsync(roleId, r => r.Include(rs => rs.RoleScreens));
+            if (role == null)
+                throw new NotFoundException("Role", roleId.ToString());
+            // Remove existing screens
+            var existingScreens = role.RoleScreens?.Select(rs => rs.ScreenId).ToList() ?? new List<int>();
+            foreach (var screenId in existingScreens)
+            {
+                if (!screenIds.Contains(screenId))
+                {
+                    var roleScreen = role.RoleScreens.FirstOrDefault(rs => rs.ScreenId == screenId);
+                    if (roleScreen != null)
+                    {
+                        role.RoleScreens.Remove(roleScreen);
+                    }
+                }
+            }
+            // Add new screens
+            foreach (var screenId in screenIds)
+            {
+                if (!existingScreens.Contains(screenId))
+                {
+                    var screen = await _screenRepository.GetByIdAsync(screenId);
+                    if (screen != null)
+                    {
+                        role.RoleScreens.Add(new RoleScreen { Screen = screen });
+                    }
+                }
+            }
+            await _roleRepository.Update(role);
+        }
 
+        public async Task AssignReportToRoleAsync(int roleId, List<int> reportIds)
+        {
+            var role = await _roleRepository.GetByIdAsync(roleId, r => r.Include(rr => rr.RoleReports));
+            if (role == null)
+                throw new NotFoundException("Role", roleId.ToString());
+            // Remove existing reports
+            var existingReports = role.RoleReports?.Select(rr => rr.ReportId).ToList() ?? new List<int>();
+            foreach (var reportId in existingReports)
+            {
+                if (!reportIds.Contains(reportId))
+                {
+                    var roleReport = role.RoleReports.FirstOrDefault(rr => rr.ReportId == reportId);
+                    if (roleReport != null)
+                    {
+                        role.RoleReports.Remove(roleReport);
+                    }
+                }
+            }
+            // Add new reports
+            foreach (var reportId in reportIds)
+            {
+                if (!existingReports.Contains(reportId))
+                {
+                    var report = await _reportRepository.GetByIdAsync(reportId);
+                    if (report != null)
+                    {
+                        role.RoleReports.Add(new RoleReport { Report = report });
+                    }
+                }
+            }
+            await _roleRepository.Update(role);
+
+
+        }
     }
 }
