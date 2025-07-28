@@ -8,7 +8,7 @@ using ReportsBackend.Domain.Helpers;
 
 namespace ReportsBackend.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {

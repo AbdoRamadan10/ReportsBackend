@@ -79,10 +79,10 @@ namespace ReportsBackend.Api.Controllers
         }
 
         [HttpPost("assign-reports-to-role")]
-        public async Task<IActionResult> AssignReportsToRoleAsync(int roleId, List<int> screenIds)
+        public async Task<IActionResult> AssignReportsToRoleAsync(int roleId, List<int> reportIds)
         {
-            await _roleService.AssignReportToRoleAsync(roleId, screenIds);
-            return Ok("Screens have been assigned successfully");
+            await _roleService.AssignReportToRoleAsync(roleId, reportIds);
+            return Ok("Reports have been assigned successfully");
         }
 
     }
