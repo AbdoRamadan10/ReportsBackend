@@ -35,7 +35,7 @@ namespace ReportsBackend.Application.Services
 
         public async Task<ReportDto> GetByIdAsync(int id)
         {
-            var report = await _reportRepository.GetByIdAsync(id, q => q.Include(t => t.Privilege));
+            var report = await _reportRepository.GetByIdAsync(id, q => q.Include(t => t.Privilege), q => q.Include(t => t.Parameters), q => q.Include(t => t.Columns));
             if (report == null)
                 throw new NotFoundException("Report", id.ToString());
             return _mapper.Map<ReportDto>(report);
@@ -64,5 +64,8 @@ namespace ReportsBackend.Application.Services
                 throw new NotFoundException("Report", id.ToString());
             await _reportRepository.Delete(report);
         }
+
+
+
     }
 }

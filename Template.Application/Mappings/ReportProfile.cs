@@ -15,7 +15,10 @@ namespace ReportsBackend.Application.Mappings
         public ReportProfile()
         {
             CreateMap<Report, ReportDto>()
-                .ForMember(dest=>dest.PrivilegeName,opt=>opt.MapFrom(src=>src.Privilege.Name));
+                .ForMember(dest => dest.PrivilegeName, opt => opt.MapFrom(src => src.Privilege.Name))
+                .ForMember(dest => dest.Columns, opt => opt.MapFrom(src => src.Columns))
+                .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters))
+                ;
             CreateMap<ReportCreateDto, Report>();
             CreateMap<ReportUpdateDto, Report>();
 

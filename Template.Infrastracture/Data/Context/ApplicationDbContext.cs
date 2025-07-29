@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Template.Domain.Entities;
 
 
 namespace ReportsBackend.Infrastracture.Data.Context
@@ -23,10 +24,31 @@ namespace ReportsBackend.Infrastracture.Data.Context
         public DbSet<RoleReport> RoleReports { get; set; }
         public DbSet<Privilege> Privileges { get; set; }
 
+        public DbSet<ReportColumn> ReportColumns { get; set; }
+
+        public DbSet<ReportParameter> ReportParameters { get; set; }
+
+        public DbSet<Product> Products { get; set; }
+
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Convert all table and column names to uppercase (unquoted)
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                // Set table name to uppercase
+                entity.SetTableName(entity.GetTableName().ToUpper());
+
+                // Convert all column names to uppercase
+                foreach (var property in entity.GetProperties())
+                {
+                    property.SetColumnName(property.GetColumnName().ToUpper());
+                }
+            }
+
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserRole>().HasKey(ur => new { ur.UserId, ur.RoleId });
 

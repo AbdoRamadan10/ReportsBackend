@@ -15,6 +15,7 @@ using ReportsBackend.Infrastracture.Services;
 using ReportsBackend.Infrastracture.Seeders;
 using ReportsBackend.Domain.Interfaces;
 using ReportsBackend.Infrastracture.Repositories;
+using ReportsBackend.Infrastracture.Helpers;
 
 namespace ReportsBackend.Infrastracture.Extensions
 {
@@ -27,7 +28,10 @@ namespace ReportsBackend.Infrastracture.Extensions
 
             //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString).EnableSensitiveDataLogging());
             services.AddDbContext<ApplicationDbContext>(options => options.UseOracle(connectionString).EnableSensitiveDataLogging());
-      
+
+            services.AddSingleton<OracleSqlExecutor>(provider =>
+                new OracleSqlExecutor(configuration.GetConnectionString("DefaultConnection")));
+
 
 
             // Add Repositories
