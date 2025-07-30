@@ -37,7 +37,12 @@ namespace ReportsBackend.Application.Services
 
         public async Task<PaginatedResult<RoleDto>> GetAllAsync(FindOptions options)
         {
-            var roles = await _roleRepository.GetAllAsync(options);
+            var roles = await _roleRepository.GetAllAsync(options
+                ,r=>r.Include(report=>report.RoleReports)
+                ,r => r.Include(screen => screen.RoleScreens)
+                ,r => r.Include(report => report.RoleReports).ThenInclude(s=>s.Report)
+                ,r => r.Include(screen => screen.RoleScreens).ThenInclude(s=>s.Screen)
+                );
             return new PaginatedResult<RoleDto>
             {
                 Items = _mapper.Map<IEnumerable<RoleDto>>(roles.Items),
@@ -50,7 +55,12 @@ namespace ReportsBackend.Application.Services
 
         public async Task<RoleDto> GetByIdAsync(int id)
         {
-            var role = await _roleRepository.GetByIdAsync(id);
+            var role = await _roleRepository.GetByIdAsync(id
+                , r => r.Include(report => report.RoleReports)
+                , r => r.Include(screen => screen.RoleScreens)
+                , r => r.Include(report => report.RoleReports).ThenInclude(s => s.Report)
+                , r => r.Include(screen => screen.RoleScreens).ThenInclude(s => s.Screen)
+                );
             if (role == null)
                 throw new NotFoundException("Role", id.ToString());
             return _mapper.Map<RoleDto>(role);

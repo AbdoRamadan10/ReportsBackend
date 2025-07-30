@@ -11,5 +11,7 @@ namespace ReportsBackend.Application.DTOs.UserRole
     {
         public int UserId { get; set; }
         public int RoleId { get; set; }
+
+        
     }
 }
