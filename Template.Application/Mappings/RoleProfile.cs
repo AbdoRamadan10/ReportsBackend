@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ReportsBackend.Application.DTOs.Role;
+using ReportsBackend.Application.DTOs.RoleReport;
 using ReportsBackend.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,11 @@ namespace ReportsBackend.Application.Mappings
         public RoleProfile()
         {
             CreateMap<Role, RoleDto>();
+            CreateMap<RoleReport, RoleReportDto>();
+
             CreateMap<RoleCreateDto, Role>();
             CreateMap<RoleUpdateDto, Role>();
+
         }
     }
 }

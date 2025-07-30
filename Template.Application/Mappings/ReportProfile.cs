@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using ReportsBackend.Application.DTOs.Report;
+using ReportsBackend.Application.DTOs.ReportColumn;
+using ReportsBackend.Application.DTOs.ReportParameter;
 using ReportsBackend.Domain.Entities;
 using ReportsBackend.Domain.Helpers;
 using System;
@@ -14,6 +16,9 @@ namespace ReportsBackend.Application.Mappings
     {
         public ReportProfile()
         {
+            CreateMap<ReportParameter, ReportParameterDto>();
+            CreateMap<ReportColumn, ReportColumnDto>();
+
             CreateMap<Report, ReportDto>()
                 .ForMember(dest => dest.PrivilegeName, opt => opt.MapFrom(src => src.Privilege.Name))
                 .ForMember(dest => dest.Columns, opt => opt.MapFrom(src => src.Columns))
@@ -21,6 +26,7 @@ namespace ReportsBackend.Application.Mappings
                 ;
             CreateMap<ReportCreateDto, Report>();
             CreateMap<ReportUpdateDto, Report>();
+
 
         }
     }
