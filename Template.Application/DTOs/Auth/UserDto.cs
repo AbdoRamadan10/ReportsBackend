@@ -14,6 +14,7 @@ namespace ReportsBackend.Application.DTOs.Auth
         public string Username { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
+        public bool Status { get; set; }
         public ICollection<UserRoleDto> UserRoles { get; set; }
 
 

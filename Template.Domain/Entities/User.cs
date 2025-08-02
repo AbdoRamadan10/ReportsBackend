@@ -13,6 +13,7 @@ namespace ReportsBackend.Domain.Entities
         public string Username { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
+        public bool Status { get; set; }
         //public string Role { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; }

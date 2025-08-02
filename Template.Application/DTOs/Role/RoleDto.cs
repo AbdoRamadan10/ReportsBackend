@@ -17,7 +17,7 @@ namespace ReportsBackend.Application.DTOs.Role
         public ICollection<RoleReportDto> ReportPermissions { get; set; }
         public ICollection<RoleScreenDto> ScreenPermissions { get; set; }
         public string? Description { get; set; }
-        public string? Status { get; set; }
+        public bool? Status { get; set; }
         public int? UserCount { get; set; }
 
 
