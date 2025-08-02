@@ -16,5 +16,8 @@ namespace ReportsBackend.Domain.Entities
         public bool IsRequired { get; set; }
         public string DefaultValue { get; set; }
         public string QueryForDropdown { get; set; }
+        public int ReportId { get; set; }
+
+        public Report? Report { get; set; }
     }
 }

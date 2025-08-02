@@ -25,6 +25,8 @@ namespace ReportsBackend.Infrastracture.Seeders
             {
                 new Screen{ Name="Dashboard",Description="لوحة القيادة",Path="/dashboard" },
                 new Screen{ Name="Reports",Description="التقارير",Path="/reports" },
+                new Screen{ Name="rolemanagment",Description="rolemanagment",Path="/roles" },
+                new Screen{ Name="usermanagment",Description="User Managment Page",Path="/users" },
 
             };
 

@@ -88,13 +88,7 @@ namespace ReportsBackend.Infrastracture.Data.Context
                 .HasForeignKey(ur => ur.ScreenId);
 
 
-            // Seed Actions
-            modelBuilder.Entity<Privilege>().HasData(
-                new Privilege { Id = 1, Name = "View" },
-                new Privilege { Id = 2, Name = "Export" },
-                new Privilege { Id = 3, Name = "Edit" },
-                new Privilege { Id = 4, Name = "Print" }
-            );
+
         }
     }
 }

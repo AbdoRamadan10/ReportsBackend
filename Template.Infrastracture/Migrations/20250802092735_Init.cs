@@ -2,8 +2,6 @@
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace ReportsBackend.Infrastracture.Migrations
 {
     /// <inheritdoc />
@@ -48,7 +46,9 @@ namespace ReportsBackend.Infrastracture.Migrations
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    DESCRIPTION = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    STATUS = table.Column<bool>(type: "NUMBER(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -165,7 +165,7 @@ namespace ReportsBackend.Infrastracture.Migrations
                     NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     DISPLAYNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     DATATYPE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    REPORTID = table.Column<int>(type: "NUMBER(10)", nullable: true)
+                    REPORTID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,7 +174,8 @@ namespace ReportsBackend.Infrastracture.Migrations
                         name: "FK_REPORTCOLUMNS_REPORTS_REPORTID",
                         column: x => x.REPORTID,
                         principalTable: "REPORTS",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,7 +191,7 @@ namespace ReportsBackend.Infrastracture.Migrations
                     ISREQUIRED = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     DEFAULTVALUE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     QUERYFORDROPDOWN = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    REPORTID = table.Column<int>(type: "NUMBER(10)", nullable: true)
+                    REPORTID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -199,7 +200,8 @@ namespace ReportsBackend.Infrastracture.Migrations
                         name: "FK_REPORTPARAMETERS_REPORTS_REPORTID",
                         column: x => x.REPORTID,
                         principalTable: "REPORTS",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,17 +226,6 @@ namespace ReportsBackend.Infrastracture.Migrations
                         principalTable: "ROLES",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "PRIVILEGES",
-                columns: new[] { "ID", "DESCRIPTION", "NAME", "PATH" },
-                values: new object[,]
-                {
-                    { 1, "", "View", "" },
-                    { 2, "", "Export", "" },
-                    { 3, "", "Edit", "" },
-                    { 4, "", "Print", "" }
                 });
 
             migrationBuilder.CreateIndex(
