@@ -30,6 +30,8 @@ namespace ReportsBackend.Application.Mappings
             CreateMap<RoleCreateDto, Role>();
             CreateMap<RoleUpdateDto, Role>();
 
+            CreateMap<Role, RoleNameDto>();
+
         }
     }
 }

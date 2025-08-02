@@ -1,4 +1,5 @@
-﻿using ReportsBackend.Domain.Entities;
+﻿using ReportsBackend.Application.DTOs.UserRole;
+using ReportsBackend.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,11 @@ namespace ReportsBackend.Application.DTOs.Auth
         public int Id { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
+        public string Name { get; set; }
+        public ICollection<UserRoleDto> UserRoles { get; set; }
+
+
+
 
     }
 }

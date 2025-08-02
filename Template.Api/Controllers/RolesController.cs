@@ -35,6 +35,13 @@ namespace ReportsBackend.Api.Controllers
             return Ok(role);
         }
 
+        [HttpGet("role-names")]
+        public async Task<ActionResult<RoleDto>> GetRoleNames([FromQuery] FindOptions options)
+        {
+            var roles = await _roleService.GetRoleNames(options);
+            return Ok(roles);
+        }
+
         [HttpPost]
         public async Task<ActionResult<RoleDto>> Create([FromBody] RoleCreateDto dto)
         {

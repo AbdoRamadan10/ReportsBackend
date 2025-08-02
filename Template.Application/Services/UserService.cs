@@ -31,7 +31,7 @@ namespace ReportsBackend.Application.Services
 
         public async Task<PaginatedResult<UserDto>> GetAllAsync(FindOptions options)
         {
-            var users = await _userRepository.GetAllAsync(options);
+            var users = await _userRepository.GetAllAsync(options, u => u.Include(u => u.UserRoles).ThenInclude(u => u.Role));
             return new PaginatedResult<UserDto>
             {
                 Items = _mapper.Map<IEnumerable<UserDto>>(users.Items),
@@ -44,7 +44,7 @@ namespace ReportsBackend.Application.Services
 
         public async Task<UserDto> GetByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id, u => u.Include(u => u.UserRoles).ThenInclude(u => u.Role));
             if (user == null)
                 throw new NotFoundException("Screen", id.ToString());
             return _mapper.Map<UserDto>(user);

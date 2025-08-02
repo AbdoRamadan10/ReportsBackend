@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ReportsBackend.Application.DTOs.Auth;
+using ReportsBackend.Application.DTOs.UserRole;
 using ReportsBackend.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,11 @@ namespace ReportsBackend.Application.Mappings
         public UserProfile()
         {
             CreateMap<User, UserDto>();
+
+
+            CreateMap<UserRole, UserRoleDto>()
+                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name))
+                ;
 
         }
     }

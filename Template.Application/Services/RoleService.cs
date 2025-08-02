@@ -38,10 +38,10 @@ namespace ReportsBackend.Application.Services
         public async Task<PaginatedResult<RoleDto>> GetAllAsync(FindOptions options)
         {
             var roles = await _roleRepository.GetAllAsync(options
-                ,r=>r.Include(report=>report.RoleReports)
-                ,r => r.Include(screen => screen.RoleScreens)
-                ,r => r.Include(report => report.RoleReports).ThenInclude(s=>s.Report)
-                ,r => r.Include(screen => screen.RoleScreens).ThenInclude(s=>s.Screen)
+                , r => r.Include(report => report.RoleReports)
+                , r => r.Include(screen => screen.RoleScreens)
+                , r => r.Include(report => report.RoleReports).ThenInclude(s => s.Report)
+                , r => r.Include(screen => screen.RoleScreens).ThenInclude(s => s.Screen)
                 );
             return new PaginatedResult<RoleDto>
             {
@@ -52,6 +52,21 @@ namespace ReportsBackend.Application.Services
 
             };
         }
+
+        public async Task<PaginatedResult<RoleNameDto>> GetRoleNames(FindOptions options)
+        {
+            var roles = await _roleRepository.GetAllAsync(options);
+            return new PaginatedResult<RoleNameDto>
+            {
+                Items = _mapper.Map<IEnumerable<RoleNameDto>>(roles.Items),
+                PageNumber = roles.PageNumber,
+                PageSize = roles.PageSize,
+                TotalCount = roles.TotalCount,
+
+            };
+        }
+
+
 
         public async Task<RoleDto> GetByIdAsync(int id)
         {
