@@ -37,11 +37,13 @@ namespace ReportsBackend.Application.Services
 
         public async Task<PaginatedResult<RoleDto>> GetAllAsync(FindOptions options)
         {
-            var roles = await _roleRepository.GetAllAsync(options
+            var roles = await _roleRepository.GetAllAsync(options,
+                r => r.Include(usr => usr.UserRoles)
                 , r => r.Include(report => report.RoleReports)
                 , r => r.Include(screen => screen.RoleScreens)
                 , r => r.Include(report => report.RoleReports).ThenInclude(s => s.Report)
                 , r => r.Include(screen => screen.RoleScreens).ThenInclude(s => s.Screen)
+
                 );
             return new PaginatedResult<RoleDto>
             {
@@ -238,5 +240,6 @@ namespace ReportsBackend.Application.Services
 
 
         }
+
     }
 }

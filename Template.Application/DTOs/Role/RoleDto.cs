@@ -20,5 +20,8 @@ namespace ReportsBackend.Application.DTOs.Role
         public string? Status { get; set; }
         public int? UserCount { get; set; }
 
+
+
+
     }
 }

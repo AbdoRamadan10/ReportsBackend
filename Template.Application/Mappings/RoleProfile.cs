@@ -18,6 +18,7 @@ namespace ReportsBackend.Application.Mappings
             CreateMap<Role, RoleDto>()
                 .ForMember(dest => dest.ReportPermissions, opt => opt.MapFrom(src => src.RoleReports))
                 .ForMember(dest => dest.ScreenPermissions, opt => opt.MapFrom(src => src.RoleScreens))
+                .ForMember(dest => dest.UserCount, opt => opt.MapFrom(src => src.UserRoles.Count))
                 ;
             CreateMap<RoleReport, RoleReportDto>()
                 .ForMember(dest => dest.ReportName, opt => opt.MapFrom(src => src.Report.Name))
