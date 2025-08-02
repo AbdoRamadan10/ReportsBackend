@@ -1,4 +1,8 @@
-﻿using System;
+﻿using ReportsBackend.Application.DTOs.RoleReport;
+using ReportsBackend.Application.DTOs.RoleScreen;
+using ReportsBackend.Application.DTOs.UserRole;
+using ReportsBackend.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +14,8 @@ namespace ReportsBackend.Application.DTOs.Role
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public ICollection<RoleReportDto> ReportPermissions { get; set; }
+        public ICollection<RoleScreenDto> ScreenPermissions { get; set; }
         public string? Description { get; set; }
         public string? Status { get; set; }
         public int? UserCount { get; set; }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using ReportsBackend.Application.DTOs.Role;
+using ReportsBackend.Application.DTOs.RoleReport;
+using ReportsBackend.Application.DTOs.RoleScreen;
 using ReportsBackend.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,9 +15,21 @@ namespace ReportsBackend.Application.Mappings
     {
         public RoleProfile()
         {
-            CreateMap<Role, RoleDto>();
+            CreateMap<Role, RoleDto>()
+                .ForMember(dest => dest.ReportPermissions, opt => opt.MapFrom(src => src.RoleReports))
+                .ForMember(dest => dest.ScreenPermissions, opt => opt.MapFrom(src => src.RoleScreens))
+                ;
+            CreateMap<RoleReport, RoleReportDto>()
+                .ForMember(dest => dest.ReportName, opt => opt.MapFrom(src => src.Report.Name))
+                ;
+            CreateMap<RoleScreen, RoleScreenDto>()
+                .ForMember(dest => dest.ScreenName, opt => opt.MapFrom(src => src.Screen.Name))
+                ;
+
+
             CreateMap<RoleCreateDto, Role>();
             CreateMap<RoleUpdateDto, Role>();
+
         }
     }
 }
