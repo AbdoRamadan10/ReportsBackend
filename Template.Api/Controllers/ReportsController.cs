@@ -16,6 +16,7 @@ using ReportsBackend.Api.Helpers;
 using Oracle.ManagedDataAccess.Client;
 using ReportsBackend.Infrastracture.Helpers;
 using ReportsBackend.Domain.Exceptions;
+using ReportsBackend.Application.DTOs.Role;
 
 namespace ReportsBackend.Api.Controllers
 {
@@ -26,6 +27,7 @@ namespace ReportsBackend.Api.Controllers
     {
         private readonly ReportService _reportService;
         private readonly OracleSqlExecutor _oracleExecutor;
+
 
         public ReportsController(ReportService reportService, OracleSqlExecutor oracleExecutor)
         {
@@ -236,127 +238,212 @@ namespace ReportsBackend.Api.Controllers
 
 
 
+        //[HttpPost("execute")]
+        //public async Task<List<object>> GetEmployees(int reportId, [FromBody] ExecuteReportRequest request = null
+
+        //    )
+        //{
+
+
+        //    //var parameters = request?.Parameters;
+        //    //var filterParameters = request?.FilterParameters;
+
+
+        //    // Convert all parameter keys to uppercase
+        //    var parameters = request?.Parameters?.ToDictionary(
+        //        kvp => kvp.Key.ToUpperInvariant(),
+        //        kvp => kvp.Value,
+        //        StringComparer.OrdinalIgnoreCase);
+
+        //    // Convert all filter parameter keys to uppercase
+        //    var filterParameters = request?.FilterParameters?.ToDictionary(
+        //        kvp => kvp.Key.ToUpperInvariant(),
+        //        kvp => kvp.Value,
+        //        StringComparer.OrdinalIgnoreCase);
+
+
+
+
+        //    var report = await _reportService.GetByIdAsync(reportId);
+        //    if (report == null)
+        //        new NotFoundException("Report", reportId.ToString());
+
+        //    var sql = report.Query;
+
+        //    var oracleParameters = new List<OracleParameter>();
+
+
+
+        //    foreach (var param in report.Parameters)
+        //    {
+        //        oracleParameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+        //    }
+
+        //    if (parameters != null)
+        //    {
+        //        foreach (var param in oracleParameters)
+        //        {
+
+        //            if (parameters.TryGetValue(param.ParameterName, out var value))
+        //            {
+        //                param.Value = value;
+        //            }
+        //            else
+        //            {
+        //                // If the parameter is not provided, use the default value
+        //                param.Value = param.Value ?? DBNull.Value;
+        //            }
+        //        }
+        //    }
+
+
+        //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, oracleParameters.ToArray());
+
+
+        //    if (filterParameters != null && filterParameters.Any())
+        //    {
+        //        results = results.Select(row =>
+        //        {
+        //            foreach (var filter in filterParameters)
+        //            {
+        //                if (!row.ContainsKey(filter.Key))
+        //                    return null; // Column doesn't exist
+        //                var rowValue = row[filter.Key];
+        //                var filterValue = filter.Value;
+        //                // Handle null comparisons
+        //                if (rowValue == null && filterValue == null) continue;
+        //                if (rowValue == null || filterValue == null) return null;
+        //                // Simple equality comparison (you can enhance this)
+        //                if (!rowValue.ToString().Equals(filterValue.ToString(), StringComparison.OrdinalIgnoreCase))
+        //                    return null;
+        //            }
+        //            return row;
+        //        }).Where(r => r != null).ToList();
+        //    }
+
+
+
+
+        //    var result = new List<object>();
+        //    foreach (var row in results)
+        //    {
+        //        var item = new Dictionary<string, object>();
+        //        foreach (var column in row)
+        //        {
+        //            item[column.Key] = column.Value;
+        //        }
+        //        result.Add(item);
+        //    }
+
+
+
+        //    return result;
+
+
+
+
+
+        //    //    var sql = "select * from \"Reports\" where \"Name\" = :name_id";
+        //    //    var parameters = new OracleParameter[]
+        //    //    {
+        //    //new OracleParameter("name_id", OracleDbType.NVarchar2) { Value = 'a' }
+        //    //    };
+
+        //    //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters);
+
+        //    //    return results.Select(row => new ReportDto
+        //    //    {
+        //    //        Id = Convert.ToInt32(row["Id"]),
+        //    //        Name = row["Name"].ToString(),
+        //    //        Description = row["Description"].ToString(),
+        //    //        Path = row["Path"].ToString(),
+        //    //        PrivilegeId = Convert.ToInt32(row["PrivilegeId"]),
+        //    //    }).ToList();
+        //}
+
+
         [HttpPost("execute")]
-        public async Task<List<object>> GetEmployees(int reportId, [FromBody] ExecuteReportRequest request = null
-
-            )
+        public async Task<ActionResult<List<object>>> Execute(int reportId)
         {
-
-
-            //var parameters = request?.Parameters;
-            //var filterParameters = request?.FilterParameters;
-
-
-            // Convert all parameter keys to uppercase
-            var parameters = request?.Parameters?.ToDictionary(
-                kvp => kvp.Key.ToUpperInvariant(),
-                kvp => kvp.Value,
-                StringComparer.OrdinalIgnoreCase);
-
-            // Convert all filter parameter keys to uppercase
-            var filterParameters = request?.FilterParameters?.ToDictionary(
-                kvp => kvp.Key.ToUpperInvariant(),
-                kvp => kvp.Value,
-                StringComparer.OrdinalIgnoreCase);
-
-
-
-
             var report = await _reportService.GetByIdAsync(reportId);
             if (report == null)
-                new NotFoundException("Report", reportId.ToString());
-
+                throw new NotFoundException("Report", reportId.ToString());
             var sql = report.Query;
 
-            var oracleParameters = new List<OracleParameter>();
-
-
+            var parameters = new List<OracleParameter>();
 
             foreach (var param in report.Parameters)
             {
-                oracleParameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-            }
-
-            if (parameters != null)
-            {
-                foreach (var param in oracleParameters)
-                {
-
-                    if (parameters.TryGetValue(param.ParameterName, out var value))
-                    {
-                        param.Value = value;
-                    }
-                    else
-                    {
-                        // If the parameter is not provided, use the default value
-                        param.Value = param.Value ?? DBNull.Value;
-                    }
-                }
-            }
-
-
-            var results = await _oracleExecutor.ExecuteQueryAsync(sql, oracleParameters.ToArray());
-
-
-            if (filterParameters != null && filterParameters.Any())
-            {
-                results = results.Select(row =>
-                {
-                    foreach (var filter in filterParameters)
-                    {
-                        if (!row.ContainsKey(filter.Key))
-                            return null; // Column doesn't exist
-                        var rowValue = row[filter.Key];
-                        var filterValue = filter.Value;
-                        // Handle null comparisons
-                        if (rowValue == null && filterValue == null) continue;
-                        if (rowValue == null || filterValue == null) return null;
-                        // Simple equality comparison (you can enhance this)
-                        if (!rowValue.ToString().Equals(filterValue.ToString(), StringComparison.OrdinalIgnoreCase))
-                            return null;
-                    }
-                    return row;
-                }).Where(r => r != null).ToList();
+                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
             }
 
 
 
+            var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters.ToArray());
 
-            var result = new List<object>();
-            foreach (var row in results)
-            {
-                var item = new Dictionary<string, object>();
-                foreach (var column in row)
-                {
-                    item[column.Key] = column.Value;
-                }
-                result.Add(item);
-            }
+            return Ok(results);
 
 
-
-            return result;
-
-
-
-
-
-            //    var sql = "select * from \"Reports\" where \"Name\" = :name_id";
-            //    var parameters = new OracleParameter[]
-            //    {
-            //new OracleParameter("name_id", OracleDbType.NVarchar2) { Value = 'a' }
-            //    };
-
-            //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters);
-
-            //    return results.Select(row => new ReportDto
-            //    {
-            //        Id = Convert.ToInt32(row["Id"]),
-            //        Name = row["Name"].ToString(),
-            //        Description = row["Description"].ToString(),
-            //        Path = row["Path"].ToString(),
-            //        PrivilegeId = Convert.ToInt32(row["PrivilegeId"]),
-            //    }).ToList();
         }
+
+        [HttpPost("execute-paginated")]
+        public async Task<ActionResult<List<object>>> ExecutePaginated(int reportId, [FromQuery] FindOptions options)
+        {
+            var report = await _reportService.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+            var sql = report.Query;
+
+            var parameters = new List<OracleParameter>();
+
+            foreach (var param in report.Parameters)
+            {
+                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+            }
+
+
+
+            var results = await _oracleExecutor.ExecuteQueryAsyncPaginated(sql, options, parameters.ToArray());
+
+            return Ok(results);
+
+
+        }
+
+        [HttpPost("execute-paginated-sort")]
+        public async Task<PaginatedResult<object>> ExecutePaginatedSort(int reportId, [FromQuery] FindOptions options)
+        {
+            var report = await _reportService.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+            var sql = report.Query;
+
+            var parameters = new List<OracleParameter>();
+
+            foreach (var param in report.Parameters)
+            {
+                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+            }
+
+            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+
+
+
+            var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSort(sql, options, parameters.ToArray());
+
+            return new PaginatedResult<object>
+            {
+                Items = results,
+                PageNumber = options.PageNumber,
+                PageSize = options.PageSize,
+                TotalCount = totalCount
+            };
+
+
+
+
+        }
+
     }
 }
+

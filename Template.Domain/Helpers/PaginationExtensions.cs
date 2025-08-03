@@ -33,11 +33,11 @@ namespace ReportsBackend.Domain.Helpers
             //}
 
             // Apply SearchTerm if present (simple string.Contains on all string properties)
-            if (!string.IsNullOrWhiteSpace(options.SearchTerm))
-            {
-                // For advanced scenarios, use a library like LINQKit or build expressions dynamically.
-                // Here, we skip implementation for brevity.
-            }
+            //if (!string.IsNullOrWhiteSpace(options.SearchTerm))
+            //{
+            //    // For advanced scenarios, use a library like LINQKit or build expressions dynamically.
+            //    // Here, we skip implementation for brevity.
+            //}
 
             int pageNumber = options.PageNumber > 0 ? options.PageNumber : 1;
             int pageSize = options.PageSize > 0 ? options.PageSize : 10;
@@ -63,5 +63,11 @@ namespace ReportsBackend.Domain.Helpers
 
             return result;
         }
+
+
+
+
+
     }
 }
+
