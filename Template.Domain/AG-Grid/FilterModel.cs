@@ -8,7 +8,8 @@ namespace ReportsBackend.Domain.AG_Grid
 {
     public class FilterModel
     {
-        public string? Type { get; set; }  // "equals", "greaterThan", etc.
+        public string? FilterType { get; set; }  // "equals", "greaterThan", etc.
         public string? Filter { get; set; }      // Supports strings, numbers, dates
+        public string? Type { get; set; }       // "text", "number", "date" (AG Grid-specific)
     }
 }
