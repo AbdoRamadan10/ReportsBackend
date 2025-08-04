@@ -22,6 +22,7 @@ namespace ReportsBackend.Infrastracture.Seeders
             ReportParameterSeeds.ReportParameterInitializer(context);
             RoleReportSeeds.RoleReportInitializer(context);
             RoleScreenSeeds.RoleScreenInitializer(context);
+            StudentSeedData.Initialize(context);
             context.SaveChanges();
         }
 

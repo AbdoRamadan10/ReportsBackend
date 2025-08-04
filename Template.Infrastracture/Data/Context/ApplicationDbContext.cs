@@ -29,6 +29,8 @@ namespace ReportsBackend.Infrastracture.Data.Context
         public DbSet<ReportParameter> ReportParameters { get; set; }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Student> Students { get; set; }
+
 
 
 

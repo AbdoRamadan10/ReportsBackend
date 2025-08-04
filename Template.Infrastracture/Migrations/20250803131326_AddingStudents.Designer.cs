@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using ReportsBackend.Infrastracture.Data.Context;
@@ -11,9 +12,11 @@ using ReportsBackend.Infrastracture.Data.Context;
 namespace ReportsBackend.Infrastracture.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250803131326_AddingStudents")]
+    partial class AddingStudents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,41 +103,24 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Field")
+                    b.Property<string>("DataType")
+                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("FIELD");
+                        .HasColumnName("DATATYPE");
 
-                    b.Property<bool>("Filter")
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("FILTER");
-
-                    b.Property<bool>("FloatingFilter")
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("FLOATINGFILTER");
-
-                    b.Property<string>("HeaderName")
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("HEADERNAME");
+                        .HasColumnName("DISPLAYNAME");
 
-                    b.Property<bool>("Hide")
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("HIDE");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("NAME");
 
                     b.Property<int>("ReportId")
                         .HasColumnType("NUMBER(10)")
                         .HasColumnName("REPORTID");
-
-                    b.Property<bool>("Resizable")
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("RESIZABLE");
-
-                    b.Property<bool>("RowGroup")
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("ROWGROUP");
-
-                    b.Property<bool>("Sortable")
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("SORTABLE");
 
                     b.HasKey("Id");
 

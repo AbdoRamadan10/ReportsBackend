@@ -15,6 +15,8 @@ namespace ReportsBackend.Domain.Helpers
         //public string? SearchTerm { get; set; }
         //public Dictionary<string, object>? Filters { get; set; }
 
+        public List<FilterCriteria>? Filters { get; set; } // Replace Dictionary with FilterCriteria
+
 
 
     }

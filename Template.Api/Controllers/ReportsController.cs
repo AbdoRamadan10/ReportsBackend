@@ -17,6 +17,7 @@ using Oracle.ManagedDataAccess.Client;
 using ReportsBackend.Infrastracture.Helpers;
 using ReportsBackend.Domain.Exceptions;
 using ReportsBackend.Application.DTOs.Role;
+using ReportsBackend.Domain.AG_Grid;
 
 namespace ReportsBackend.Api.Controllers
 {
@@ -438,6 +439,98 @@ namespace ReportsBackend.Api.Controllers
                 PageSize = options.PageSize,
                 TotalCount = totalCount
             };
+
+
+
+
+        }
+
+        [HttpPost("execute-paginated-sort-filter")]
+        public async Task<PaginatedResult<object>> ExecutePaginatedSortFilter(int reportId, [FromQuery] FindOptions options)
+        {
+            var report = await _reportService.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+            var sql = report.Query;
+
+            var parameters = new List<OracleParameter>();
+
+            foreach (var param in report.Parameters)
+            {
+                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+            }
+
+            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+
+
+
+            var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSortFilter(sql, options, parameters.ToArray());
+
+            return new PaginatedResult<object>
+            {
+                Items = results,
+                PageNumber = options.PageNumber,
+                PageSize = options.PageSize,
+                TotalCount = totalCount
+            };
+
+
+
+
+        }
+
+        [HttpPost("execute-grid")]
+        public async Task<ActionResult<List<object>>> ExecuteGrid(int reportId, GridRequest options)
+        {
+            var report = await _reportService.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+            var sql = report.Query;
+
+            var parameters = new List<OracleParameter>();
+
+            foreach (var param in report.Parameters)
+            {
+                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+            }
+
+            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+
+
+
+            var results = await _oracleExecutor.ExecuteGridQueryAsync(sql, options, parameters.ToArray());
+
+            return Ok(results);
+
+
+
+
+
+        }
+
+        [HttpPost("execute-grid-final")]
+        public async Task<ActionResult<List<object>>> ExecuteGridFinal(int reportId, GridRequest options)
+        {
+            var report = await _reportService.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+            var sql = report.Query;
+
+            var parameters = new List<OracleParameter>();
+
+            foreach (var param in report.Parameters)
+            {
+                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+            }
+
+            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+
+
+
+            var results = await _oracleExecutor.ExecuteGridQueryAsyncFinal(sql, options, parameters.ToArray());
+
+            return Ok(results);
+
 
 
 
