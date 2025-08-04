@@ -436,7 +436,7 @@ namespace ReportsBackend.Infrastracture.Helpers
                 var model = filter.Value;
                 string paramName = $":filter_{paramIndex}";
 
-                switch (model.FilterType?.ToLower())
+                switch (model.Type?.ToLower())
                 {
                     case "equals":
                         conditions.Add($"{column} = {paramName}");
@@ -487,7 +487,7 @@ namespace ReportsBackend.Infrastracture.Helpers
 
                     // Add more filter types as needed
                     default:
-                        throw new NotSupportedException($"Filter type '{model.FilterType}' is not supported.");
+                        throw new NotSupportedException($"Filter type '{model.Type}' is not supported.");
                 }
 
                 paramIndex++;

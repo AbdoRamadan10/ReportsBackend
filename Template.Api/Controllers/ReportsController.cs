@@ -363,150 +363,150 @@ namespace ReportsBackend.Api.Controllers
         //}
 
 
-        [HttpPost("execute")]
-        public async Task<ActionResult<List<object>>> Execute(int reportId)
-        {
-            var report = await _reportService.GetByIdAsync(reportId);
-            if (report == null)
-                throw new NotFoundException("Report", reportId.ToString());
-            var sql = report.Query;
+        //[HttpPost("execute")]
+        //public async Task<ActionResult<List<object>>> Execute(int reportId)
+        //{
+        //    var report = await _reportService.GetByIdAsync(reportId);
+        //    if (report == null)
+        //        throw new NotFoundException("Report", reportId.ToString());
+        //    var sql = report.Query;
 
-            var parameters = new List<OracleParameter>();
+        //    var parameters = new List<OracleParameter>();
 
-            foreach (var param in report.Parameters)
-            {
-                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-            }
-
-
-
-            var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters.ToArray());
-
-            return Ok(results);
-
-
-        }
-
-        [HttpPost("execute-paginated")]
-        public async Task<ActionResult<List<object>>> ExecutePaginated(int reportId, [FromQuery] FindOptions options)
-        {
-            var report = await _reportService.GetByIdAsync(reportId);
-            if (report == null)
-                throw new NotFoundException("Report", reportId.ToString());
-            var sql = report.Query;
-
-            var parameters = new List<OracleParameter>();
-
-            foreach (var param in report.Parameters)
-            {
-                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-            }
+        //    foreach (var param in report.Parameters)
+        //    {
+        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+        //    }
 
 
 
-            var results = await _oracleExecutor.ExecuteQueryAsyncPaginated(sql, options, parameters.ToArray());
+        //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters.ToArray());
 
-            return Ok(results);
+        //    return Ok(results);
 
 
-        }
+        //}
 
-        [HttpPost("execute-paginated-sort")]
-        public async Task<PaginatedResult<object>> ExecutePaginatedSort(int reportId, [FromQuery] FindOptions options)
-        {
-            var report = await _reportService.GetByIdAsync(reportId);
-            if (report == null)
-                throw new NotFoundException("Report", reportId.ToString());
-            var sql = report.Query;
+        //[HttpPost("execute-paginated")]
+        //public async Task<ActionResult<List<object>>> ExecutePaginated(int reportId, [FromQuery] FindOptions options)
+        //{
+        //    var report = await _reportService.GetByIdAsync(reportId);
+        //    if (report == null)
+        //        throw new NotFoundException("Report", reportId.ToString());
+        //    var sql = report.Query;
 
-            var parameters = new List<OracleParameter>();
+        //    var parameters = new List<OracleParameter>();
 
-            foreach (var param in report.Parameters)
-            {
-                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-            }
-
-            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+        //    foreach (var param in report.Parameters)
+        //    {
+        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+        //    }
 
 
 
-            var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSort(sql, options, parameters.ToArray());
+        //    var results = await _oracleExecutor.ExecuteQueryAsyncPaginated(sql, options, parameters.ToArray());
 
-            return new PaginatedResult<object>
-            {
-                Items = results,
-                PageNumber = options.PageNumber,
-                PageSize = options.PageSize,
-                TotalCount = totalCount
-            };
+        //    return Ok(results);
 
 
+        //}
 
+        //[HttpPost("execute-paginated-sort")]
+        //public async Task<PaginatedResult<object>> ExecutePaginatedSort(int reportId, [FromQuery] FindOptions options)
+        //{
+        //    var report = await _reportService.GetByIdAsync(reportId);
+        //    if (report == null)
+        //        throw new NotFoundException("Report", reportId.ToString());
+        //    var sql = report.Query;
 
-        }
+        //    var parameters = new List<OracleParameter>();
 
-        [HttpPost("execute-paginated-sort-filter")]
-        public async Task<PaginatedResult<object>> ExecutePaginatedSortFilter(int reportId, [FromQuery] FindOptions options)
-        {
-            var report = await _reportService.GetByIdAsync(reportId);
-            if (report == null)
-                throw new NotFoundException("Report", reportId.ToString());
-            var sql = report.Query;
+        //    foreach (var param in report.Parameters)
+        //    {
+        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+        //    }
 
-            var parameters = new List<OracleParameter>();
-
-            foreach (var param in report.Parameters)
-            {
-                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-            }
-
-            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+        //    var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
 
 
 
-            var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSortFilter(sql, options, parameters.ToArray());
+        //    var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSort(sql, options, parameters.ToArray());
 
-            return new PaginatedResult<object>
-            {
-                Items = results,
-                PageNumber = options.PageNumber,
-                PageSize = options.PageSize,
-                TotalCount = totalCount
-            };
+        //    return new PaginatedResult<object>
+        //    {
+        //        Items = results,
+        //        PageNumber = options.PageNumber,
+        //        PageSize = options.PageSize,
+        //        TotalCount = totalCount
+        //    };
 
 
 
 
-        }
+        //}
 
-        [HttpPost("execute-grid")]
-        public async Task<ActionResult<List<object>>> ExecuteGrid(int reportId, GridRequest options)
-        {
-            var report = await _reportService.GetByIdAsync(reportId);
-            if (report == null)
-                throw new NotFoundException("Report", reportId.ToString());
-            var sql = report.Query;
+        //[HttpPost("execute-paginated-sort-filter")]
+        //public async Task<PaginatedResult<object>> ExecutePaginatedSortFilter(int reportId, [FromQuery] FindOptions options)
+        //{
+        //    var report = await _reportService.GetByIdAsync(reportId);
+        //    if (report == null)
+        //        throw new NotFoundException("Report", reportId.ToString());
+        //    var sql = report.Query;
 
-            var parameters = new List<OracleParameter>();
+        //    var parameters = new List<OracleParameter>();
 
-            foreach (var param in report.Parameters)
-            {
-                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-            }
+        //    foreach (var param in report.Parameters)
+        //    {
+        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+        //    }
 
-            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
-
-
-
-            var results = await _oracleExecutor.ExecuteGridQueryAsync(sql, options, parameters.ToArray());
-
-            return Ok(results);
+        //    var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
 
 
 
+        //    var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSortFilter(sql, options, parameters.ToArray());
+
+        //    return new PaginatedResult<object>
+        //    {
+        //        Items = results,
+        //        PageNumber = options.PageNumber,
+        //        PageSize = options.PageSize,
+        //        TotalCount = totalCount
+        //    };
 
 
-        }
+
+
+        //}
+
+        //[HttpPost("execute-grid")]
+        //public async Task<ActionResult<List<object>>> ExecuteGrid(int reportId, GridRequest options)
+        //{
+        //    var report = await _reportService.GetByIdAsync(reportId);
+        //    if (report == null)
+        //        throw new NotFoundException("Report", reportId.ToString());
+        //    var sql = report.Query;
+
+        //    var parameters = new List<OracleParameter>();
+
+        //    foreach (var param in report.Parameters)
+        //    {
+        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+        //    }
+
+        //    var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+
+
+
+        //    var results = await _oracleExecutor.ExecuteGridQueryAsync(sql, options, parameters.ToArray());
+
+        //    return Ok(results);
+
+
+
+
+
+        //}
 
         [HttpPost("execute-grid-final")]
         public async Task<ActionResult<List<object>>> ExecuteGridFinal(int reportId, GridRequest options)
