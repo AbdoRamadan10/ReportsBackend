@@ -15,7 +15,7 @@ namespace ReportsBackend.Domain.Entities
         public string? Field { get; set; }
         public string? HeaderName { get; set; }
         public bool Sortable { get; set; }
-        public bool Filter { get; set; }
+        public string Filter { get; set; }
         public bool Resizable { get; set; }
         public bool FloatingFilter { get; set; }
         public bool RowGroup { get; set; }
