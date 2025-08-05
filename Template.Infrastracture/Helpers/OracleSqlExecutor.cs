@@ -436,6 +436,15 @@ namespace ReportsBackend.Infrastracture.Helpers
                 var model = filter.Value;
                 string paramName = $":filter_{paramIndex}";
 
+                // Handle date filters differently
+                if (model.Type?.ToLower() == "date")
+                {
+                    var dateCondition = HandleDateFilter(column, model, parameters, ref paramIndex);
+                    if (!string.IsNullOrEmpty(dateCondition))
+                        conditions.Add(dateCondition);
+                    continue;
+                }
+
                 switch (model.Type?.ToLower())
                 {
                     case "equals":
@@ -496,6 +505,28 @@ namespace ReportsBackend.Infrastracture.Helpers
             return conditions.Any() ? " WHERE " + string.Join(" AND ", conditions) : "";
         }
 
+        private string HandleDateFilter(string column, FilterModel model, List<OracleParameter> parameters, ref int paramIndex)
+        {
+            var dateConditions = new List<string>();
+
+            // Handle dateFrom
+            if (!string.IsNullOrEmpty(model.DateFrom))
+            {
+                string fromParam = $":dateFrom_{paramIndex++}";
+                dateConditions.Add($"{column} >= TO_DATE({fromParam}, 'YYYY-MM-DD')");
+                parameters.Add(new OracleParameter(fromParam, model.DateFrom));
+            }
+
+            // Handle dateTo
+            if (!string.IsNullOrEmpty(model.DateTo))
+            {
+                string toParam = $":dateTo_{paramIndex++}";
+                dateConditions.Add($"{column} <= TO_DATE({toParam}, 'YYYY-MM-DD')");
+                parameters.Add(new OracleParameter(toParam, model.DateTo));
+            }
+
+            return dateConditions.Any() ? string.Join(" AND ", dateConditions) : "";
+        }
         private string BuildOrderByClause(GridRequest request)
         {
             if (request.SortModel == null || !request.SortModel.Any())
@@ -519,6 +550,8 @@ namespace ReportsBackend.Infrastracture.Helpers
                 }
             }
         }
+
+
 
 
         private async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncGrid(string sql, List<OracleParameter> parameters)
