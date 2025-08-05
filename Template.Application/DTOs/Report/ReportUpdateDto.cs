@@ -7,6 +7,8 @@
         public string Path { get; set; } = string.Empty;
         public bool HasDetail { get; set; }
         public int? DetailId { get; set; }
+        public string? DetailColumn { get; set; }
+
 
         public int PrivilegeId { get; set; }
     }

@@ -9,6 +9,8 @@
         public string Path { get; set; }
         public bool HasDetail { get; set; } = false;
         public int? DetailId { get; set; }
+        public string? DetailColumn { get; set; }
+
         public List<ReportColumn> Columns { get; set; }
         public List<ReportParameter> Parameters { get; set; }
         public int PrivilegeId { get; set; }

@@ -10,6 +10,8 @@ namespace ReportsBackend.Application.DTOs.Report
         public string Path { get; set; }
         public bool HasDetail { get; set; }
         public int? DetailId { get; set; }
+        public string? DetailColumn { get; set; }
+
         public int PrivilegeId { get; set; }
 
 
