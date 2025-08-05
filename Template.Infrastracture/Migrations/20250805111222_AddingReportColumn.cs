@@ -5,7 +5,7 @@
 namespace ReportsBackend.Infrastracture.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingReportDetailColumn : Migration
+    public partial class AddingReportColumn : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

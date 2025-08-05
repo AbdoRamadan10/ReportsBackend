@@ -12,7 +12,7 @@ using ReportsBackend.Infrastracture.Data.Context;
 namespace ReportsBackend.Infrastracture.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250804083138_AddingReportColumn")]
+    [Migration("20250805111222_AddingReportColumn")]
     partial class AddingReportColumn
     {
         /// <inheritdoc />
@@ -68,6 +68,18 @@ namespace ReportsBackend.Infrastracture.Migrations
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("DESCRIPTION");
 
+                    b.Property<string>("DetailColumn")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("DETAILCOLUMN");
+
+                    b.Property<int?>("DetailId")
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("DETAILID");
+
+                    b.Property<bool>("HasDetail")
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnName("HASDETAIL");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
@@ -107,8 +119,9 @@ namespace ReportsBackend.Infrastracture.Migrations
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("FIELD");
 
-                    b.Property<bool>("Filter")
-                        .HasColumnType("NUMBER(1)")
+                    b.Property<string>("Filter")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("FILTER");
 
                     b.Property<bool>("FloatingFilter")
@@ -336,6 +349,44 @@ namespace ReportsBackend.Infrastracture.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("STUDENTS");
+                });
+
+            modelBuilder.Entity("ReportsBackend.Domain.Entities.StudentDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("ID");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AcademicAdvisor")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("ACADEMICADVISOR");
+
+                    b.Property<string>("AdditionalNotes")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("ADDITIONALNOTES");
+
+                    b.Property<string>("EmergencyContactName")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("EMERGENCYCONTACTNAME");
+
+                    b.Property<string>("EmergencyContactPhone")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("EMERGENCYCONTACTPHONE");
+
+                    b.Property<string>("HealthInformation")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("HEALTHINFORMATION");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("STUDENTID");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("STUDENTDETAILS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.User", b =>
