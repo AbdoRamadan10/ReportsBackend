@@ -55,10 +55,16 @@ namespace ReportsBackend.Infrastracture.Seeders
                 return;
             }
 
-            var students = GetStudents(100000); // Generate 100 random students
+            var students = GetStudents(1000); // Generate 100 random students
             context.Students.AddRange(students);
             context.SaveChanges();
+
+            // Generate 3-5 details for EACH student
+            var studentDetails = GetMultipleDetailsPerStudent(students, minDetails: 3, maxDetails: 5);
+            context.StudentDetails.AddRange(studentDetails);
+            context.SaveChanges();
         }
+
 
         public static List<Student> GetStudents(int count)
         {
@@ -85,6 +91,34 @@ namespace ReportsBackend.Infrastracture.Seeders
 
             return students;
         }
+
+        public static List<StudentDetail> GetMultipleDetailsPerStudent(List<Student> students, int minDetails, int maxDetails)
+        {
+            var details = new List<StudentDetail>();
+            var advisorNames = new[] { "Dr. Smith", "Prof. Johnson", "Dr. Williams", "Prof. Brown", "Dr. Davis" };
+
+            foreach (var student in students)
+            {
+                // Generate between minDetails and maxDetails per student
+                int detailCount = random.Next(minDetails, maxDetails + 1);
+
+                for (int i = 0; i < detailCount; i++)
+                {
+                    details.Add(new StudentDetail
+                    {
+                        StudentId = student.Id,
+                        EmergencyContactName = $"{lastNames[random.Next(lastNames.Length)]}, {firstNames[random.Next(firstNames.Length)]}",
+                        EmergencyContactPhone = GenerateRandomPhoneNumber(),
+                        HealthInformation = random.Next(10) > 7 ? "Allergies" : "None reported",
+                        AdditionalNotes = random.Next(10) > 8 ? $"Note {i + 1}: Special needs" : $"Note {i + 1}: General",
+                        AcademicAdvisor = advisorNames[random.Next(advisorNames.Length)],
+                    });
+                }
+            }
+
+            return details;
+        }
+
 
         private static DateTime GenerateRandomBirthDate()
         {

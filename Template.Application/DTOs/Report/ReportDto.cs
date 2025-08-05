@@ -17,6 +17,8 @@ namespace ReportsBackend.Application.DTOs.Report
         public string Description { get; set; } = string.Empty;
         public string Query { get; set; }
         public string Path { get; set; } = string.Empty;
+        public bool HasDetail { get; set; }
+        public int? DetailId { get; set; }
         public List<ReportColumnDto> Columns { get; set; }
         public List<ReportParameterDto> Parameters { get; set; }
         public int PrivilegeId { get; set; }
