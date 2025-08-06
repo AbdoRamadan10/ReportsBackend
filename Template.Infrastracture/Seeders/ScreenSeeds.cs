@@ -23,10 +23,10 @@ namespace ReportsBackend.Infrastracture.Seeders
 
             var screens = new Screen[]
             {
-                new Screen{ Name="Dashboard",Description="لوحة القيادة",Path="/dashboard" },
-                new Screen{ Name="Reports",Description="التقارير",Path="/reports" },
-                new Screen{ Name="rolemanagment",Description="rolemanagment",Path="/roles" },
-                new Screen{ Name="usermanagment",Description="User Managment Page",Path="/users" },
+                new Screen{ Id=1,Name="Dashboard",Description="لوحة القيادة",Path="/dashboard" },
+                new Screen{ Id=2,Name="Reports",Description="التقارير",Path="/reports" },
+                new Screen{ Id=3,Name="rolemanagment",Description="rolemanagment",Path="/roles" },
+                new Screen{ Id=4,Name="usermanagment",Description="User Managment Page",Path="/users" },
 
             };
 
@@ -35,7 +35,7 @@ namespace ReportsBackend.Infrastracture.Seeders
                 context.Screens.Add(screen);
             }
 
-
+            context.SaveChanges();
         }
     }
 

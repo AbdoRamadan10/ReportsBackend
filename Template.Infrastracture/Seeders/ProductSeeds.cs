@@ -42,6 +42,7 @@ namespace Template.Infrastracture.Seeders
                 context.Products.Add(product);
             }
 
+            context.SaveChanges();
 
         }
     }

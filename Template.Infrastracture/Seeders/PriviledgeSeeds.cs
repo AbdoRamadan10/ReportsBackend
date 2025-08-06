@@ -23,7 +23,7 @@ namespace Template.Infrastracture.Seeders
 
             var privileges = new Privilege[]
             {
-                new Privilege{ Name="Export",Description="export",Path="/export" },
+                new Privilege{Id=1, Name="Export",Description="export",Path="/export" },
 
 
             };
@@ -33,6 +33,7 @@ namespace Template.Infrastracture.Seeders
                 context.Privileges.Add(privilege);
             }
 
+            context.SaveChanges();
 
         }
     }

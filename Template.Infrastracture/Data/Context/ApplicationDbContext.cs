@@ -41,7 +41,7 @@ namespace ReportsBackend.Infrastracture.Data.Context
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
                 // Set table name to uppercase
-                entity.SetTableName(entity.GetTableName().ToUpper());
+                entity.SetTableName("DASH_" + entity.GetTableName().ToUpper());
 
                 // Convert all column names to uppercase
                 foreach (var property in entity.GetProperties())

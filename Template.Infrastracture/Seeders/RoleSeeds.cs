@@ -23,18 +23,18 @@ namespace ReportsBackend.Infrastracture.Seeders
 
             var roles = new Role[]
             {
-                new Role{Name="ADMIN",Description="",Status=true },
-                new Role{Name="USER",Description="",Status=true },
-                new Role{Name="WH",Description="",Status=true },
-                new Role{Name="WS",Description="",Status=true },
-                new Role{Name="DEPT",Description="",Status=true },
+                new Role{Id = 1, Name="ADMIN",Description="",Status=true},
+                new Role{Id = 2, Name="USER",Description="",Status=true},
+                new Role{Id = 3, Name="WH",Description="",Status=true},
+                new Role{Id = 4, Name="WS",Description="",Status=true},
+                new Role{Id = 5, Name="DEPT",Description="",Status=true},
             };
 
             foreach (var role in roles)
             {
                 context.Roles.Add(role);
             }
-
+            context.SaveChanges();
 
         }
     }

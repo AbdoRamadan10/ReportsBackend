@@ -22,14 +22,15 @@ namespace ReportsBackend.Infrastracture.Seeders
 
             var reportParameters = new ReportParameter[]
             {
-                new  ReportParameter{Name="ID",DisplayName="ID",DataType="NUMBER",ParameterType="NUMBER",IsRequired=false,DefaultValue="1",QueryForDropdown="A",ReportId=5},
+                new  ReportParameter{Id=1,Name="CATEGORYID",DisplayName="CATEGORYID",DataType="NUMBER",ParameterType="NUMBER",IsRequired=false,DefaultValue="1",QueryForDropdown="A",Sort=1,ReportId=1},
+                new  ReportParameter{Id=2,Name="PRICE",DisplayName="PRICE",DataType="NUMBER",ParameterType="NUMBER",IsRequired=false,DefaultValue="1",QueryForDropdown="A",Sort=2,ReportId=1},
             };
 
             foreach (var reportParameter in reportParameters)
             {
                 context.ReportParameters.Add(reportParameter);
             }
-
+            context.SaveChanges();
 
         }
     }

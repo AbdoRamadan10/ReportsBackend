@@ -23,8 +23,8 @@ namespace ReportsBackend.Infrastracture.Seeders
 
             var roleReports = new RoleReport[]
             {
-                new RoleReport{RoleId=1,ReportId=5},
-                new RoleReport{RoleId=5,ReportId=5},
+                new RoleReport{RoleId=1,ReportId=1},
+                new RoleReport{RoleId=1,ReportId=2},
 
 
             };
@@ -34,7 +34,7 @@ namespace ReportsBackend.Infrastracture.Seeders
                 context.RoleReports.Add(roleReport);
             }
 
-
+            context.SaveChanges();
         }
     }
 }

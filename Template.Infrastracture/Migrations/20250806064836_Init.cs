@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,7 +12,7 @@ namespace ReportsBackend.Infrastracture.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "PRIVILEGES",
+                name: "DASH_PRIVILEGES",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
@@ -22,26 +23,29 @@ namespace ReportsBackend.Infrastracture.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PRIVILEGES", x => x.ID);
+                    table.PrimaryKey("PK_DASH_PRIVILEGES", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PRODUCTS",
+                name: "DASH_PRODUCTS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    DESCRIPTION = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    PRICE = table.Column<decimal>(type: "DECIMAL(18, 2)", nullable: false)
+                    DESCRIPTION = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    PRICE = table.Column<decimal>(type: "DECIMAL(18, 2)", nullable: false),
+                    CATEGORYID = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    CATEGORYNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    EXPIRATIONDATE = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PRODUCTS", x => x.ID);
+                    table.PrimaryKey("PK_DASH_PRODUCTS", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ROLES",
+                name: "DASH_ROLES",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
@@ -52,11 +56,11 @@ namespace ReportsBackend.Infrastracture.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ROLES", x => x.ID);
+                    table.PrimaryKey("PK_DASH_ROLES", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
-                name: "SCREENS",
+                name: "DASH_SCREENS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
@@ -67,26 +71,65 @@ namespace ReportsBackend.Infrastracture.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SCREENS", x => x.ID);
+                    table.PrimaryKey("PK_DASH_SCREENS", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
-                name: "USERS",
+                name: "DASH_STUDENTDETAILS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    USERNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    EMAIL = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    PASSWORDHASH = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    STUDENTID = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    EMERGENCYCONTACTNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    EMERGENCYCONTACTPHONE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    HEALTHINFORMATION = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    ADDITIONALNOTES = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    ACADEMICADVISOR = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USERS", x => x.ID);
+                    table.PrimaryKey("PK_DASH_STUDENTDETAILS", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
-                name: "REPORTS",
+                name: "DASH_STUDENTS",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
+                    NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    GRADE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    GENDER = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    DATEOFBIRTH = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
+                    EMAIL = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    PHONENUMBER = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    ADDRESS = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DASH_STUDENTS", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DASH_USERS",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
+                    NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    USERNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    EMAIL = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    PASSWORDHASH = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    STATUS = table.Column<bool>(type: "NUMBER(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DASH_USERS", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DASH_REPORTS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
@@ -95,21 +138,24 @@ namespace ReportsBackend.Infrastracture.Migrations
                     DESCRIPTION = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     QUERY = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     PATH = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    HASDETAIL = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    DETAILID = table.Column<int>(type: "NUMBER(10)", nullable: true),
+                    DETAILCOLUMN = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     PRIVILEGEID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_REPORTS", x => x.ID);
+                    table.PrimaryKey("PK_DASH_REPORTS", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_REPORTS_PRIVILEGES_PRIVILEGEID",
+                        name: "FK_DASH_REPORTS_DASH_PRIVILEGES_PRIVILEGEID",
                         column: x => x.PRIVILEGEID,
-                        principalTable: "PRIVILEGES",
+                        principalTable: "DASH_PRIVILEGES",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ROLESCREENS",
+                name: "DASH_ROLESCREENS",
                 columns: table => new
                 {
                     ROLEID = table.Column<int>(type: "NUMBER(10)", nullable: false),
@@ -117,23 +163,23 @@ namespace ReportsBackend.Infrastracture.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ROLESCREENS", x => new { x.SCREENID, x.ROLEID });
+                    table.PrimaryKey("PK_DASH_ROLESCREENS", x => new { x.SCREENID, x.ROLEID });
                     table.ForeignKey(
-                        name: "FK_ROLESCREENS_ROLES_ROLEID",
+                        name: "FK_DASH_ROLESCREENS_DASH_ROLES_ROLEID",
                         column: x => x.ROLEID,
-                        principalTable: "ROLES",
+                        principalTable: "DASH_ROLES",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ROLESCREENS_SCREENS_SCREENID",
+                        name: "FK_DASH_ROLESCREENS_DASH_SCREENS_SCREENID",
                         column: x => x.SCREENID,
-                        principalTable: "SCREENS",
+                        principalTable: "DASH_SCREENS",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "USERROLES",
+                name: "DASH_USERROLES",
                 columns: table => new
                 {
                     USERID = table.Column<int>(type: "NUMBER(10)", nullable: false),
@@ -141,71 +187,77 @@ namespace ReportsBackend.Infrastracture.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USERROLES", x => new { x.USERID, x.ROLEID });
+                    table.PrimaryKey("PK_DASH_USERROLES", x => new { x.USERID, x.ROLEID });
                     table.ForeignKey(
-                        name: "FK_USERROLES_ROLES_ROLEID",
+                        name: "FK_DASH_USERROLES_DASH_ROLES_ROLEID",
                         column: x => x.ROLEID,
-                        principalTable: "ROLES",
+                        principalTable: "DASH_ROLES",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_USERROLES_USERS_USERID",
+                        name: "FK_DASH_USERROLES_DASH_USERS_USERID",
                         column: x => x.USERID,
-                        principalTable: "USERS",
+                        principalTable: "DASH_USERS",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "REPORTCOLUMNS",
+                name: "DASH_REPORTCOLUMNS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    DISPLAYNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    DATATYPE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    FIELD = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    HEADERNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SORTABLE = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    FILTER = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    RESIZABLE = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    FLOATINGFILTER = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    ROWGROUP = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    HIDE = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     REPORTID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_REPORTCOLUMNS", x => x.ID);
+                    table.PrimaryKey("PK_DASH_REPORTCOLUMNS", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_REPORTCOLUMNS_REPORTS_REPORTID",
+                        name: "FK_DASH_REPORTCOLUMNS_DASH_REPORTS_REPORTID",
                         column: x => x.REPORTID,
-                        principalTable: "REPORTS",
+                        principalTable: "DASH_REPORTS",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "REPORTPARAMETERS",
+                name: "DASH_REPORTPARAMETERS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     NAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    DISPLAYNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    DATATYPE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    PARAMETERTYPE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    DISPLAYNAME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    DATATYPE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    PARAMETERTYPE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     ISREQUIRED = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     DEFAULTVALUE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    QUERYFORDROPDOWN = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    QUERYFORDROPDOWN = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SORT = table.Column<int>(type: "NUMBER(10)", nullable: true),
                     REPORTID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_REPORTPARAMETERS", x => x.ID);
+                    table.PrimaryKey("PK_DASH_REPORTPARAMETERS", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_REPORTPARAMETERS_REPORTS_REPORTID",
+                        name: "FK_DASH_REPORTPARAMETERS_DASH_REPORTS_REPORTID",
                         column: x => x.REPORTID,
-                        principalTable: "REPORTS",
+                        principalTable: "DASH_REPORTS",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ROLEREPORTS",
+                name: "DASH_ROLEREPORTS",
                 columns: table => new
                 {
                     ROLEID = table.Column<int>(type: "NUMBER(10)", nullable: false),
@@ -213,49 +265,49 @@ namespace ReportsBackend.Infrastracture.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ROLEREPORTS", x => new { x.REPORTID, x.ROLEID });
+                    table.PrimaryKey("PK_DASH_ROLEREPORTS", x => new { x.REPORTID, x.ROLEID });
                     table.ForeignKey(
-                        name: "FK_ROLEREPORTS_REPORTS_REPORTID",
+                        name: "FK_DASH_ROLEREPORTS_DASH_REPORTS_REPORTID",
                         column: x => x.REPORTID,
-                        principalTable: "REPORTS",
+                        principalTable: "DASH_REPORTS",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ROLEREPORTS_ROLES_ROLEID",
+                        name: "FK_DASH_ROLEREPORTS_DASH_ROLES_ROLEID",
                         column: x => x.ROLEID,
-                        principalTable: "ROLES",
+                        principalTable: "DASH_ROLES",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_REPORTCOLUMNS_REPORTID",
-                table: "REPORTCOLUMNS",
+                name: "IX_DASH_REPORTCOLUMNS_REPORTID",
+                table: "DASH_REPORTCOLUMNS",
                 column: "REPORTID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_REPORTPARAMETERS_REPORTID",
-                table: "REPORTPARAMETERS",
+                name: "IX_DASH_REPORTPARAMETERS_REPORTID",
+                table: "DASH_REPORTPARAMETERS",
                 column: "REPORTID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_REPORTS_PRIVILEGEID",
-                table: "REPORTS",
+                name: "IX_DASH_REPORTS_PRIVILEGEID",
+                table: "DASH_REPORTS",
                 column: "PRIVILEGEID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ROLEREPORTS_ROLEID",
-                table: "ROLEREPORTS",
+                name: "IX_DASH_ROLEREPORTS_ROLEID",
+                table: "DASH_ROLEREPORTS",
                 column: "ROLEID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ROLESCREENS_ROLEID",
-                table: "ROLESCREENS",
+                name: "IX_DASH_ROLESCREENS_ROLEID",
+                table: "DASH_ROLESCREENS",
                 column: "ROLEID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_USERROLES_ROLEID",
-                table: "USERROLES",
+                name: "IX_DASH_USERROLES_ROLEID",
+                table: "DASH_USERROLES",
                 column: "ROLEID");
         }
 
@@ -263,37 +315,43 @@ namespace ReportsBackend.Infrastracture.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PRODUCTS");
+                name: "DASH_PRODUCTS");
 
             migrationBuilder.DropTable(
-                name: "REPORTCOLUMNS");
+                name: "DASH_REPORTCOLUMNS");
 
             migrationBuilder.DropTable(
-                name: "REPORTPARAMETERS");
+                name: "DASH_REPORTPARAMETERS");
 
             migrationBuilder.DropTable(
-                name: "ROLEREPORTS");
+                name: "DASH_ROLEREPORTS");
 
             migrationBuilder.DropTable(
-                name: "ROLESCREENS");
+                name: "DASH_ROLESCREENS");
 
             migrationBuilder.DropTable(
-                name: "USERROLES");
+                name: "DASH_STUDENTDETAILS");
 
             migrationBuilder.DropTable(
-                name: "REPORTS");
+                name: "DASH_STUDENTS");
 
             migrationBuilder.DropTable(
-                name: "SCREENS");
+                name: "DASH_USERROLES");
 
             migrationBuilder.DropTable(
-                name: "ROLES");
+                name: "DASH_REPORTS");
 
             migrationBuilder.DropTable(
-                name: "USERS");
+                name: "DASH_SCREENS");
 
             migrationBuilder.DropTable(
-                name: "PRIVILEGES");
+                name: "DASH_ROLES");
+
+            migrationBuilder.DropTable(
+                name: "DASH_USERS");
+
+            migrationBuilder.DropTable(
+                name: "DASH_PRIVILEGES");
         }
     }
 }

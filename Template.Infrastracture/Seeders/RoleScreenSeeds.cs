@@ -24,10 +24,10 @@ namespace ReportsBackend.Infrastracture.Seeders
             var roleScreens = new RoleScreen[]
             {
                 new RoleScreen{RoleId=1,ScreenId=1},
-                new RoleScreen{RoleId=5,ScreenId=1},
+                new RoleScreen{RoleId=2,ScreenId=1},
                 new RoleScreen{RoleId=1,ScreenId=2},
-                new RoleScreen{RoleId=5,ScreenId=2},
-                new RoleScreen{RoleId=5,ScreenId=3},
+                new RoleScreen{RoleId=2,ScreenId=2},
+                new RoleScreen{RoleId=2,ScreenId=3},
 
 
             };
@@ -36,7 +36,7 @@ namespace ReportsBackend.Infrastracture.Seeders
             {
                 context.RoleScreens.Add(roleScreen);
             }
-
+            context.SaveChanges();
 
         }
     }

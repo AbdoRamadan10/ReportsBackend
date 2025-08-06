@@ -48,7 +48,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PRIVILEGES");
+                    b.ToTable("DASH_PRIVILEGES");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.Report", b =>
@@ -100,7 +100,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasIndex("PrivilegeId");
 
-                    b.ToTable("REPORTS");
+                    b.ToTable("DASH_REPORTS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.ReportColumn", b =>
@@ -153,7 +153,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("REPORTCOLUMNS");
+                    b.ToTable("DASH_REPORTCOLUMNS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.ReportParameter", b =>
@@ -166,7 +166,6 @@ namespace ReportsBackend.Infrastracture.Migrations
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DataType")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("DATATYPE");
 
@@ -176,7 +175,6 @@ namespace ReportsBackend.Infrastracture.Migrations
                         .HasColumnName("DEFAULTVALUE");
 
                     b.Property<string>("DisplayName")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("DISPLAYNAME");
 
@@ -190,12 +188,10 @@ namespace ReportsBackend.Infrastracture.Migrations
                         .HasColumnName("NAME");
 
                     b.Property<string>("ParameterType")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("PARAMETERTYPE");
 
                     b.Property<string>("QueryForDropdown")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("QUERYFORDROPDOWN");
 
@@ -203,11 +199,15 @@ namespace ReportsBackend.Infrastracture.Migrations
                         .HasColumnType("NUMBER(10)")
                         .HasColumnName("REPORTID");
 
+                    b.Property<int?>("Sort")
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("SORT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("REPORTPARAMETERS");
+                    b.ToTable("DASH_REPORTPARAMETERS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.Role", b =>
@@ -234,7 +234,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ROLES");
+                    b.ToTable("DASH_ROLES");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.RoleReport", b =>
@@ -251,7 +251,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("ROLEREPORTS");
+                    b.ToTable("DASH_ROLEREPORTS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.RoleScreen", b =>
@@ -268,7 +268,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("ROLESCREENS");
+                    b.ToTable("DASH_ROLESCREENS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.Screen", b =>
@@ -297,7 +297,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SCREENS");
+                    b.ToTable("DASH_SCREENS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.Student", b =>
@@ -345,7 +345,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("STUDENTS");
+                    b.ToTable("DASH_STUDENTS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.StudentDetail", b =>
@@ -383,7 +383,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("STUDENTDETAILS");
+                    b.ToTable("DASH_STUDENTDETAILS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.User", b =>
@@ -420,7 +420,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("USERS");
+                    b.ToTable("DASH_USERS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.UserRole", b =>
@@ -437,7 +437,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("USERROLES");
+                    b.ToTable("DASH_USERROLES");
                 });
 
             modelBuilder.Entity("Template.Domain.Entities.Product", b =>
@@ -477,7 +477,7 @@ namespace ReportsBackend.Infrastracture.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PRODUCTS");
+                    b.ToTable("DASH_PRODUCTS");
                 });
 
             modelBuilder.Entity("ReportsBackend.Domain.Entities.Report", b =>
