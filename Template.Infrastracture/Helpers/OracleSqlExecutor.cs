@@ -31,362 +31,362 @@ namespace ReportsBackend.Infrastracture.Helpers
             }
         }
 
-        // For queries that return results (SELECT)
-        public async Task<List<Dictionary<string, object>>> ExecuteQueryAsync(string sql, params OracleParameter[] parameters)
-        {
-            var results = new List<Dictionary<string, object>>();
+        //// For queries that return results (SELECT)
+        //public async Task<List<Dictionary<string, object>>> ExecuteQueryAsync(string sql, params OracleParameter[] parameters)
+        //{
+        //    var results = new List<Dictionary<string, object>>();
 
-            using (var connection = new OracleConnection(_connectionString))
-            {
-                await connection.OpenAsync();
+        //    using (var connection = new OracleConnection(_connectionString))
+        //    {
+        //        await connection.OpenAsync();
 
-                using (var command = new OracleCommand(sql, connection))
-                {
-                    if (parameters != null && parameters.Length > 0)
-                    {
-                        command.Parameters.AddRange(parameters);
-                    }
+        //        using (var command = new OracleCommand(sql, connection))
+        //        {
+        //            if (parameters != null && parameters.Length > 0)
+        //            {
+        //                command.Parameters.AddRange(parameters);
+        //            }
 
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var row = new Dictionary<string, object>();
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
-                            }
-                            results.Add(row);
-                        }
-                    }
-                }
-            }
+        //            using (var reader = await command.ExecuteReaderAsync())
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    var row = new Dictionary<string, object>();
+        //                    for (int i = 0; i < reader.FieldCount; i++)
+        //                    {
+        //                        row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+        //                    }
+        //                    results.Add(row);
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return results;
-        }
+        //    return results;
+        //}
 
-        // For queries that return results (SELECT) Modifed With FindOptions
-        public async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncPaginated(
-            string sql,
-            FindOptions? findOptions = null,
-            params OracleParameter[] parameters
+        //// For queries that return results (SELECT) Modifed With FindOptions
+        //public async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncPaginated(
+        //    string sql,
+        //    FindOptions? findOptions = null,
+        //    params OracleParameter[] parameters
 
-            )
-        {
-            var results = new List<Dictionary<string, object>>();
+        //    )
+        //{
+        //    var results = new List<Dictionary<string, object>>();
 
-            using (var connection = new OracleConnection(_connectionString))
-            {
-                await connection.OpenAsync();
+        //    using (var connection = new OracleConnection(_connectionString))
+        //    {
+        //        await connection.OpenAsync();
 
-                // Apply pagination if FindOptions is provided
-                string paginatedSql = sql;
-                if (findOptions != null)
-                {
-                    int offset = (findOptions.PageNumber - 1) * findOptions.PageSize;
-                    paginatedSql = $@"
-                SELECT * FROM (
-                    SELECT a.*, ROWNUM rn FROM (
-                        {sql}
-                    ) a
-                    WHERE ROWNUM <= {offset + findOptions.PageSize}
-                )
-                WHERE rn > {offset}";
-                }
+        //        // Apply pagination if FindOptions is provided
+        //        string paginatedSql = sql;
+        //        if (findOptions != null)
+        //        {
+        //            int offset = (findOptions.PageNumber - 1) * findOptions.PageSize;
+        //            paginatedSql = $@"
+        //        SELECT * FROM (
+        //            SELECT a.*, ROWNUM rn FROM (
+        //                {sql}
+        //            ) a
+        //            WHERE ROWNUM <= {offset + findOptions.PageSize}
+        //        )
+        //        WHERE rn > {offset}";
+        //        }
 
-                using (var command = new OracleCommand(paginatedSql, connection))
-                {
-                    if (parameters != null && parameters.Length > 0)
-                    {
-                        command.Parameters.AddRange(parameters);
-                    }
+        //        using (var command = new OracleCommand(paginatedSql, connection))
+        //        {
+        //            if (parameters != null && parameters.Length > 0)
+        //            {
+        //                command.Parameters.AddRange(parameters);
+        //            }
 
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var row = new Dictionary<string, object>();
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
-                            }
-                            results.Add(row);
-                        }
-                    }
-                }
-            }
+        //            using (var reader = await command.ExecuteReaderAsync())
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    var row = new Dictionary<string, object>();
+        //                    for (int i = 0; i < reader.FieldCount; i++)
+        //                    {
+        //                        row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+        //                    }
+        //                    results.Add(row);
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return results;
-        }
-
-
-        // For queries that return results (SELECT) Modified With FindOptions and Sorting
-        public async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncPaginatedSort(string sql,
-            FindOptions? findOptions = null,
-            params OracleParameter[] parameters)
-        {
-
-            if (!string.IsNullOrEmpty(findOptions.SortBy))
-            {
-                sql += $" ORDER BY {findOptions.SortBy} {(findOptions.SortDescending ? "DESC" : "ASC")}";
-            }
-
-            if (findOptions != null)
-            {
-                int offset = (findOptions.PageNumber - 1) * findOptions.PageSize;
-                sql = $@"
-                          {sql}
-                    OFFSET {offset} ROWS FETCH NEXT {findOptions.PageSize} ROWS ONLY";
-            }
+        //    return results;
+        //}
 
 
-            var results = new List<Dictionary<string, object>>();
+        //    // For queries that return results (SELECT) Modified With FindOptions and Sorting
+        //    public async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncPaginatedSort(string sql,
+        //        FindOptions? findOptions = null,
+        //        params OracleParameter[] parameters)
+        //    {
 
-            using (var connection = new OracleConnection(_connectionString))
-            {
-                await connection.OpenAsync();
+        //        if (!string.IsNullOrEmpty(findOptions.SortBy))
+        //        {
+        //            sql += $" ORDER BY {findOptions.SortBy} {(findOptions.SortDescending ? "DESC" : "ASC")}";
+        //        }
 
-                using (var command = new OracleCommand(sql, connection))
-                {
-                    if (parameters != null && parameters.Length > 0)
-                    {
-                        command.Parameters.AddRange(parameters);
-                    }
+        //        if (findOptions != null)
+        //        {
+        //            int offset = (findOptions.PageNumber - 1) * findOptions.PageSize;
+        //            sql = $@"
+        //                      {sql}
+        //                OFFSET {offset} ROWS FETCH NEXT {findOptions.PageSize} ROWS ONLY";
+        //        }
 
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var row = new Dictionary<string, object>();
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
-                            }
-                            results.Add(row);
-                        }
-                    }
-                }
-            }
 
-            return results;
-        }
+        //        var results = new List<Dictionary<string, object>>();
 
-        // For queries that return results (SELECT) Modified With FindOptions and Sorting and filtering
-        public async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncPaginatedSortFilter(
-    string baseSql,
-    FindOptions? findOptions = null,
-    params OracleParameter[] parameters)
-        {
-            var results = new List<Dictionary<string, object>>();
-            var combinedParameters = new List<OracleParameter>(parameters);
+        //        using (var connection = new OracleConnection(_connectionString))
+        //        {
+        //            await connection.OpenAsync();
 
-            using (var connection = new OracleConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                string finalSql = baseSql;
-                string whereClause = "";
+        //            using (var command = new OracleCommand(sql, connection))
+        //            {
+        //                if (parameters != null && parameters.Length > 0)
+        //                {
+        //                    command.Parameters.AddRange(parameters);
+        //                }
 
-                // Build WHERE clause from filters
-                if (findOptions?.Filters != null && findOptions.Filters.Any())
-                {
-                    var filterConditions = new List<string>();
-                    int paramIndex = 0;
+        //                using (var reader = await command.ExecuteReaderAsync())
+        //                {
+        //                    while (await reader.ReadAsync())
+        //                    {
+        //                        var row = new Dictionary<string, object>();
+        //                        for (int i = 0; i < reader.FieldCount; i++)
+        //                        {
+        //                            row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+        //                        }
+        //                        results.Add(row);
+        //                    }
+        //                }
+        //            }
+        //        }
 
-                    foreach (var filter in findOptions.Filters)
-                    {
-                        string paramName = $":filter_{paramIndex}";
-                        string condition;
+        //        return results;
+        //    }
 
-                        switch (filter.Operator.ToLower())
-                        {
-                            case "equals":
-                                condition = $"{filter.ColumnName} = {paramName}";
-                                combinedParameters.Add(new OracleParameter(paramName, filter.Value));
-                                break;
+        //    // For queries that return results (SELECT) Modified With FindOptions and Sorting and filtering
+        //    public async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncPaginatedSortFilter(
+        //string baseSql,
+        //FindOptions? findOptions = null,
+        //params OracleParameter[] parameters)
+        //    {
+        //        var results = new List<Dictionary<string, object>>();
+        //        var combinedParameters = new List<OracleParameter>(parameters);
 
-                            case "contains":
-                                condition = $"{filter.ColumnName} LIKE '%' || {paramName} || '%'";
-                                combinedParameters.Add(new OracleParameter(paramName, filter.Value));
-                                break;
+        //        using (var connection = new OracleConnection(_connectionString))
+        //        {
+        //            await connection.OpenAsync();
+        //            string finalSql = baseSql;
+        //            string whereClause = "";
 
-                            case "startswith":
-                                condition = $"{filter.ColumnName} LIKE {paramName} || '%'";
-                                combinedParameters.Add(new OracleParameter(paramName, filter.Value));
-                                break;
+        //            // Build WHERE clause from filters
+        //            if (findOptions?.Filters != null && findOptions.Filters.Any())
+        //            {
+        //                var filterConditions = new List<string>();
+        //                int paramIndex = 0;
 
-                            case "endswith":
-                                condition = $"{filter.ColumnName} LIKE '%' || {paramName}";
-                                combinedParameters.Add(new OracleParameter(paramName, filter.Value));
-                                break;
+        //                foreach (var filter in findOptions.Filters)
+        //                {
+        //                    string paramName = $":filter_{paramIndex}";
+        //                    string condition;
 
-                            default:
-                                throw new ArgumentException($"Unsupported operator: {filter.Operator}");
-                        }
+        //                    switch (filter.Operator.ToLower())
+        //                    {
+        //                        case "equals":
+        //                            condition = $"{filter.ColumnName} = {paramName}";
+        //                            combinedParameters.Add(new OracleParameter(paramName, filter.Value));
+        //                            break;
 
-                        filterConditions.Add(condition);
-                        paramIndex++;
-                    }
+        //                        case "contains":
+        //                            condition = $"{filter.ColumnName} LIKE '%' || {paramName} || '%'";
+        //                            combinedParameters.Add(new OracleParameter(paramName, filter.Value));
+        //                            break;
 
-                    whereClause = " WHERE " + string.Join(" AND ", filterConditions);
-                }
+        //                        case "startswith":
+        //                            condition = $"{filter.ColumnName} LIKE {paramName} || '%'";
+        //                            combinedParameters.Add(new OracleParameter(paramName, filter.Value));
+        //                            break;
 
-                // Add sorting (ORDER BY)
-                string orderByClause = "";
-                if (!string.IsNullOrEmpty(findOptions?.SortBy))
-                {
-                    orderByClause = $" ORDER BY {findOptions.SortBy} {(findOptions.SortDescending ? "DESC" : "ASC")}";
-                }
+        //                        case "endswith":
+        //                            condition = $"{filter.ColumnName} LIKE '%' || {paramName}";
+        //                            combinedParameters.Add(new OracleParameter(paramName, filter.Value));
+        //                            break;
 
-                // Apply pagination (Oracle ROWNUM)
-                string paginatedSql = finalSql + whereClause + orderByClause;
-                if (findOptions != null)
-                {
-                    int offset = (findOptions.PageNumber - 1) * findOptions.PageSize;
-                    paginatedSql = $@"
-                SELECT * FROM (
-                    SELECT a.*, ROWNUM rn FROM (
-                        {finalSql + whereClause + orderByClause}
-                    ) a
-                    WHERE ROWNUM <= {offset + findOptions.PageSize}
-                )
-                WHERE rn > {offset}";
-                }
+        //                        default:
+        //                            throw new ArgumentException($"Unsupported operator: {filter.Operator}");
+        //                    }
 
-                // Execute query
-                using (var command = new OracleCommand(paginatedSql, connection))
-                {
-                    if (combinedParameters.Any())
-                        command.Parameters.AddRange(combinedParameters.ToArray());
+        //                    filterConditions.Add(condition);
+        //                    paramIndex++;
+        //                }
 
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var row = new Dictionary<string, object>();
-                            for (int i = 0; i < reader.FieldCount; i++)
-                                row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
-                            results.Add(row);
-                        }
-                    }
-                }
-            }
+        //                whereClause = " WHERE " + string.Join(" AND ", filterConditions);
+        //            }
 
-            return results;
-        }
+        //            // Add sorting (ORDER BY)
+        //            string orderByClause = "";
+        //            if (!string.IsNullOrEmpty(findOptions?.SortBy))
+        //            {
+        //                orderByClause = $" ORDER BY {findOptions.SortBy} {(findOptions.SortDescending ? "DESC" : "ASC")}";
+        //            }
 
-        public async Task<GridResponse<Dictionary<string, object>>> ExecuteGridQueryAsync(
-    string baseSql,
-    GridRequest gridRequest,
-    params OracleParameter[] parameters)
-        {
-            var response = new GridResponse<Dictionary<string, object>>();
-            var combinedParameters = new List<OracleParameter>(parameters);
-            string whereClause = "";
-            string orderByClause = "";
+        //            // Apply pagination (Oracle ROWNUM)
+        //            string paginatedSql = finalSql + whereClause + orderByClause;
+        //            if (findOptions != null)
+        //            {
+        //                int offset = (findOptions.PageNumber - 1) * findOptions.PageSize;
+        //                paginatedSql = $@"
+        //            SELECT * FROM (
+        //                SELECT a.*, ROWNUM rn FROM (
+        //                    {finalSql + whereClause + orderByClause}
+        //                ) a
+        //                WHERE ROWNUM <= {offset + findOptions.PageSize}
+        //            )
+        //            WHERE rn > {offset}";
+        //            }
 
-            // 1. Build WHERE clause from FilterModel
-            if (gridRequest.FilterModel != null && gridRequest.FilterModel.Any())
-            {
-                var filterConditions = new List<string>();
-                int paramIndex = 0;
+        //            // Execute query
+        //            using (var command = new OracleCommand(paginatedSql, connection))
+        //            {
+        //                if (combinedParameters.Any())
+        //                    command.Parameters.AddRange(combinedParameters.ToArray());
 
-                foreach (var filter in gridRequest.FilterModel)
-                {
-                    string columnName = filter.Key; // Column ID (e.g., "name")
-                    FilterModel filterModel = filter.Value;
-                    string paramName = $":filter_{paramIndex}";
+        //                using (var reader = await command.ExecuteReaderAsync())
+        //                {
+        //                    while (await reader.ReadAsync())
+        //                    {
+        //                        var row = new Dictionary<string, object>();
+        //                        for (int i = 0; i < reader.FieldCount; i++)
+        //                            row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+        //                        results.Add(row);
+        //                    }
+        //                }
+        //            }
+        //        }
 
-                    switch (filterModel.FilterType?.ToLower())
-                    {
-                        case "equals":
-                            filterConditions.Add($"{columnName} = {paramName}");
-                            combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
-                            break;
+        //        return results;
+        //    }
 
-                        case "contains":
-                            filterConditions.Add($"{columnName} LIKE '%' || {paramName} || '%'");
-                            combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
-                            break;
+        //    public async Task<GridResponse<Dictionary<string, object>>> ExecuteGridQueryAsync(
+        //string baseSql,
+        //GridRequest gridRequest,
+        //params OracleParameter[] parameters)
+        //    {
+        //        var response = new GridResponse<Dictionary<string, object>>();
+        //        var combinedParameters = new List<OracleParameter>(parameters);
+        //        string whereClause = "";
+        //        string orderByClause = "";
 
-                        case "notcontains":
-                            filterConditions.Add($"{columnName} NOT LIKE '%' || {paramName} || '%'");
-                            combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
-                            break;
+        //        // 1. Build WHERE clause from FilterModel
+        //        if (gridRequest.FilterModel != null && gridRequest.FilterModel.Any())
+        //        {
+        //            var filterConditions = new List<string>();
+        //            int paramIndex = 0;
 
-                        case "startswith":
-                            filterConditions.Add($"{columnName} LIKE {paramName} || '%'");
-                            combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
-                            break;
+        //            foreach (var filter in gridRequest.FilterModel)
+        //            {
+        //                string columnName = filter.Key; // Column ID (e.g., "name")
+        //                FilterModel filterModel = filter.Value;
+        //                string paramName = $":filter_{paramIndex}";
 
-                        case "endswith":
-                            filterConditions.Add($"{columnName} LIKE '%' || {paramName}");
-                            combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
-                            break;
+        //                switch (filterModel.FilterType?.ToLower())
+        //                {
+        //                    case "equals":
+        //                        filterConditions.Add($"{columnName} = {paramName}");
+        //                        combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
+        //                        break;
 
-                        default:
-                            throw new NotSupportedException($"Filter type '{filterModel.FilterType}' is not supported.");
-                    }
+        //                    case "contains":
+        //                        filterConditions.Add($"{columnName} LIKE '%' || {paramName} || '%'");
+        //                        combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
+        //                        break;
 
-                    paramIndex++;
-                }
+        //                    case "notcontains":
+        //                        filterConditions.Add($"{columnName} NOT LIKE '%' || {paramName} || '%'");
+        //                        combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
+        //                        break;
 
-                whereClause = " WHERE " + string.Join(" AND ", filterConditions);
-            }
+        //                    case "startswith":
+        //                        filterConditions.Add($"{columnName} LIKE {paramName} || '%'");
+        //                        combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
+        //                        break;
 
-            // 2. Build ORDER BY clause from SortModel
-            if (gridRequest.SortModel != null && gridRequest.SortModel.Any())
-            {
-                var sortClauses = gridRequest.SortModel
-                    .Select(sort => $"{sort.ColId} {sort.Sort.ToUpper()}");
-                orderByClause = " ORDER BY " + string.Join(", ", sortClauses);
-            }
+        //                    case "endswith":
+        //                        filterConditions.Add($"{columnName} LIKE '%' || {paramName}");
+        //                        combinedParameters.Add(new OracleParameter(paramName, filterModel.Filter));
+        //                        break;
 
-            // 3. Build paginated SQL (Oracle ROWNUM)
-            int pageSize = gridRequest.EndRow - gridRequest.StartRow;
-            string paginatedSql = $@"
-        SELECT * FROM (
-            SELECT a.*, ROWNUM rn FROM (
-                {baseSql + whereClause + orderByClause}
-            ) a
-            WHERE ROWNUM <= {gridRequest.EndRow}
-        )
-        WHERE rn > {gridRequest.StartRow}";
+        //                    default:
+        //                        throw new NotSupportedException($"Filter type '{filterModel.FilterType}' is not supported.");
+        //                }
 
-            // 4. Execute the query
-            var rows = new List<Dictionary<string, object>>();
-            using (var connection = new OracleConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                using (var command = new OracleCommand(paginatedSql, connection))
-                {
-                    if (combinedParameters.Any())
-                        command.Parameters.AddRange(combinedParameters.ToArray());
+        //                paramIndex++;
+        //            }
 
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var row = new Dictionary<string, object>();
-                            for (int i = 0; i < reader.FieldCount; i++)
-                                row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
-                            rows.Add(row);
-                        }
-                    }
-                }
+        //            whereClause = " WHERE " + string.Join(" AND ", filterConditions);
+        //        }
 
-                // 5. Get total row count (for LastRow)
-                string countSql = $"SELECT COUNT(*) FROM ({baseSql + whereClause})";
-                using (var countCommand = new OracleCommand(countSql, connection))
-                {
-                    if (combinedParameters.Any())
-                        countCommand.Parameters.AddRange(combinedParameters.ToArray());
-                    response.LastRow = Convert.ToInt32(await countCommand.ExecuteScalarAsync());
-                }
-            }
+        //        // 2. Build ORDER BY clause from SortModel
+        //        if (gridRequest.SortModel != null && gridRequest.SortModel.Any())
+        //        {
+        //            var sortClauses = gridRequest.SortModel
+        //                .Select(sort => $"{sort.ColId} {sort.Sort.ToUpper()}");
+        //            orderByClause = " ORDER BY " + string.Join(", ", sortClauses);
+        //        }
 
-            response.Rows = rows;
-            return response;
-        }
+        //        // 3. Build paginated SQL (Oracle ROWNUM)
+        //        int pageSize = gridRequest.EndRow - gridRequest.StartRow;
+        //        string paginatedSql = $@"
+        //    SELECT * FROM (
+        //        SELECT a.*, ROWNUM rn FROM (
+        //            {baseSql + whereClause + orderByClause}
+        //        ) a
+        //        WHERE ROWNUM <= {gridRequest.EndRow}
+        //    )
+        //    WHERE rn > {gridRequest.StartRow}";
+
+        //        // 4. Execute the query
+        //        var rows = new List<Dictionary<string, object>>();
+        //        using (var connection = new OracleConnection(_connectionString))
+        //        {
+        //            await connection.OpenAsync();
+        //            using (var command = new OracleCommand(paginatedSql, connection))
+        //            {
+        //                if (combinedParameters.Any())
+        //                    command.Parameters.AddRange(combinedParameters.ToArray());
+
+        //                using (var reader = await command.ExecuteReaderAsync())
+        //                {
+        //                    while (await reader.ReadAsync())
+        //                    {
+        //                        var row = new Dictionary<string, object>();
+        //                        for (int i = 0; i < reader.FieldCount; i++)
+        //                            row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+        //                        rows.Add(row);
+        //                    }
+        //                }
+        //            }
+
+        //            // 5. Get total row count (for LastRow)
+        //            string countSql = $"SELECT COUNT(*) FROM ({baseSql + whereClause})";
+        //            using (var countCommand = new OracleCommand(countSql, connection))
+        //            {
+        //                if (combinedParameters.Any())
+        //                    countCommand.Parameters.AddRange(combinedParameters.ToArray());
+        //                response.LastRow = Convert.ToInt32(await countCommand.ExecuteScalarAsync());
+        //            }
+        //        }
+
+        //        response.Rows = rows;
+        //        return response;
+        //    }
 
         public async Task<GridResponse<Dictionary<string, object>>> ExecuteGridQueryAsyncFinal(
     string baseSql,
@@ -551,9 +551,6 @@ namespace ReportsBackend.Infrastracture.Helpers
             }
         }
 
-
-
-
         private async Task<List<Dictionary<string, object>>> ExecuteQueryAsyncGrid(string sql, List<OracleParameter> parameters)
         {
             var results = new List<Dictionary<string, object>>();
@@ -577,9 +574,6 @@ namespace ReportsBackend.Infrastracture.Helpers
             }
             return results;
         }
-
-
-
 
         // For commands that don't return results (INSERT, UPDATE, DELETE)
         public async Task<int> ExecuteCommandAsync(string sql, params OracleParameter[] parameters)

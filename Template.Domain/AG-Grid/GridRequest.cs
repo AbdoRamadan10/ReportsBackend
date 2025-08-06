@@ -12,7 +12,9 @@ namespace ReportsBackend.Domain.AG_Grid
         public int EndRow { get; set; }
         public List<SortModel>? SortModel { get; set; }
         public Dictionary<string, FilterModel>? FilterModel { get; set; }
-        public List<ColumnVO>? RowGroupCols { get; set; }
-        public List<string>? GroupKeys { get; set; }
+        //public List<ColumnVO>? RowGroupCols { get; set; }
+        //public List<string>? GroupKeys { get; set; }
+        public List<string>? SqlParameters { get; set; }
+
     }
 }

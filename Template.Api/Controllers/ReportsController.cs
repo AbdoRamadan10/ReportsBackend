@@ -516,18 +516,28 @@ namespace ReportsBackend.Api.Controllers
                 throw new NotFoundException("Report", reportId.ToString());
             var sql = report.Query;
 
-            var parameters = new List<OracleParameter>();
+            var sqlParameters = report.Parameters;
+            sqlParameters = sqlParameters.OrderBy(p => p.Sort).ToList(); // Ensure parameters are sorted by name
+            var oracleParameters = new List<OracleParameter>();
+            int index = 0;
 
-            foreach (var param in report.Parameters)
+            foreach (var param in sqlParameters)
             {
-                parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+                //if (param.DataType.ToLower() == "number")
+
+
+                // Ensure the sort of oracleParameters and add them in the same order as in the query  
+                oracleParameters.Add(new OracleParameter(param.Name, param.DataType) { Value = options.SqlParameters[index] ?? param.DefaultValue });
+                index++;
             }
 
-            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
+
+
+            var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, oracleParameters.ToArray());
 
 
 
-            var results = await _oracleExecutor.ExecuteGridQueryAsyncFinal(sql, options, parameters.ToArray());
+            var results = await _oracleExecutor.ExecuteGridQueryAsyncFinal(sql, options, oracleParameters.ToArray());
 
             return Ok(results);
 
