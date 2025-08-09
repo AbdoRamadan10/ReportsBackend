@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
 using ReportsBackend.Api.Middleware;
@@ -14,6 +15,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
+
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -77,7 +80,7 @@ else
                 try
                 {
                     var uri = new Uri(origin);
-                    return uri.Host == "localhost" || uri.Host.StartsWith("192.168.40");
+                    return uri.Host == "localhost" || uri.Host.StartsWith("192.168.40") || uri.Host.StartsWith("192.168.8") || uri.Host.StartsWith("192.168.20");
 
                 }
                 catch
@@ -97,14 +100,41 @@ else
 QuestPDF.Settings.License = LicenseType.Community;
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+
+        // For development: drops and recreates database
+        // For production: applies migrations safely
+        if (app.Environment.IsDevelopment())
+        {
+            //await context.Database.EnsureDeletedAsync(); // Optional - only for dev
+            await context.Database.EnsureCreatedAsync();
+        }
+        else
+        {
+            await context.Database.MigrateAsync(); // Better for production
+        }
+
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while initializing the database");
+    }
+}
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+app.UseSwagger();
+app.UseSwaggerUI();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

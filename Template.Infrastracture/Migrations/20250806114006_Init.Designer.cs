@@ -12,7 +12,7 @@ using ReportsBackend.Infrastracture.Data.Context;
 namespace ReportsBackend.Infrastracture.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250806092718_Init")]
+    [Migration("20250806114006_Init")]
     partial class Init
     {
         /// <inheritdoc />

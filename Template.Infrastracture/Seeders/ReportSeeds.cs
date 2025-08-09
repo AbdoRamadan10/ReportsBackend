@@ -23,8 +23,8 @@ namespace ReportsBackend.Infrastracture.Seeders
             var reports = new Report[]
             {
                 new Report{ Id=1,Name="Product", Description="Product",Query="select * from products",Path="products",PrivilegeId=1,HasDetail=false },
-                new Report{ Id=2,Name="Student", Description="Student",Query="select * from students",Path="students",PrivilegeId=1,HasDetail=true ,DetailId=3,DetailColumn="STUDENTID"},
-                new Report{ Id=3,Name="StudentDetail", Description="StudentDetail",Query="select * from studentdetails",Path="studentdetails",PrivilegeId=1 },
+                new Report{ Id=2,Name="Student", Description="Student",Query="select * from dash_students",Path="students",PrivilegeId=1,HasDetail=true ,DetailId=3,DetailColumn="STUDENTID"},
+                new Report{ Id=3,Name="StudentDetail", Description="StudentDetail",Query="select * from dash_studentdetails",Path="studentdetails",PrivilegeId=1 },
             };
 
             foreach (var report in reports)

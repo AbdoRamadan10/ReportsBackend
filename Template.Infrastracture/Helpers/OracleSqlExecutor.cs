@@ -452,6 +452,22 @@ namespace ReportsBackend.Infrastracture.Helpers
                         parameters.Add(new OracleParameter(paramName, model.Filter));
                         break;
 
+                    case "notequals":
+                        conditions.Add($"{column} != {paramName}");
+                        parameters.Add(new OracleParameter(paramName, model.Filter));
+                        break;
+
+                    case "blank":
+                        // For NULL or empty string (Oracle treats empty string as NULL)
+                        conditions.Add($"({column} IS NULL OR {column} = '')");
+                        break;
+
+                    case "notblank":
+                        // For NOT NULL and not empty string
+                        conditions.Add($"({column} IS NOT NULL AND {column} != '')");
+                        parameters.Add(new OracleParameter(paramName, model.Filter));
+                        break;
+
                     case "contains":
                         conditions.Add($"{column} LIKE '%' || {paramName} || '%'");
                         parameters.Add(new OracleParameter(paramName, model.Filter));
@@ -491,6 +507,7 @@ namespace ReportsBackend.Infrastracture.Helpers
                         conditions.Add($"{column} <= {paramName}");
                         parameters.Add(new OracleParameter(paramName, model.Filter));
                         break;
+
 
 
 
