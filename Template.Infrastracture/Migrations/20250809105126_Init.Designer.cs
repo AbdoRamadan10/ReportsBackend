@@ -12,7 +12,7 @@ using ReportsBackend.Infrastracture.Data.Context;
 namespace ReportsBackend.Infrastracture.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250806114006_Init")]
+    [Migration("20250809105126_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -135,6 +135,10 @@ namespace ReportsBackend.Infrastracture.Migrations
                     b.Property<bool>("Hide")
                         .HasColumnType("NUMBER(1)")
                         .HasColumnName("HIDE");
+
+                    b.Property<bool>("IsMaster")
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnName("ISMASTER");
 
                     b.Property<int>("ReportId")
                         .HasColumnType("NUMBER(10)")

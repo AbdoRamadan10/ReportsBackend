@@ -9,7 +9,7 @@ namespace ReportsBackend.Application.DTOs.ReportColumn
     public class ReportColumnDto
     {
         //public int Id { get; set; }
-        
+
         public string? Field { get; set; }
         public string? HeaderName { get; set; }
         public bool Sortable { get; set; }
@@ -18,6 +18,7 @@ namespace ReportsBackend.Application.DTOs.ReportColumn
         public bool FloatingFilter { get; set; }
         public bool RowGroup { get; set; }
         public bool Hide { get; set; }
+        public bool IsMaster { get; set; }
         public int ReportId { get; set; }
     }
 }

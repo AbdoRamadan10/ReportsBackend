@@ -20,6 +20,7 @@ namespace ReportsBackend.Domain.Entities
         public bool FloatingFilter { get; set; }
         public bool RowGroup { get; set; }
         public bool Hide { get; set; }
+        public bool IsMaster { get; set; }
         public int ReportId { get; set; }
         public Report Report { get; set; }
 

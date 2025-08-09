@@ -133,6 +133,10 @@ namespace ReportsBackend.Infrastracture.Migrations
                         .HasColumnType("NUMBER(1)")
                         .HasColumnName("HIDE");
 
+                    b.Property<bool>("IsMaster")
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnName("ISMASTER");
+
                     b.Property<int>("ReportId")
                         .HasColumnType("NUMBER(10)")
                         .HasColumnName("REPORTID");

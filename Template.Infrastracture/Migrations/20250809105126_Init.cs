@@ -216,6 +216,7 @@ namespace ReportsBackend.Infrastracture.Migrations
                     FLOATINGFILTER = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     ROWGROUP = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     HIDE = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    ISMASTER = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     REPORTID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
