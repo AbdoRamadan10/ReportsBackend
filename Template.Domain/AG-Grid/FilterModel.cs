@@ -17,15 +17,17 @@ namespace ReportsBackend.Domain.AG_Grid
 
         public string? Type { get; set; }
 
+        // For operator support (AND/OR)
+        public string? Operator { get; set; }
+
+        // For compound filters
+        public List<FilterModel>? Conditions { get; set; }
+
         // For date filters
-        [JsonPropertyName("dateFrom")] // For System.Text.Json
-        //[JsonProperty("dateFrom")]     // For Newtonsoft.Json
+        [JsonPropertyName("dateFrom")]
         public string? DateFrom { get; set; }
 
-        [JsonPropertyName("dateTo")]   // For System.Text.Json
-        //[JsonProperty("dateTo")]       // For Newtonsoft.Json
+        [JsonPropertyName("dateTo")]
         public string? DateTo { get; set; }
-
-
     }
 }

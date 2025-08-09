@@ -426,100 +426,106 @@ namespace ReportsBackend.Infrastracture.Helpers
                 return "";
 
             var conditions = new List<string>();
-            int paramIndex = 0;
-
-
+            int paramIndex = parameters.Count;
 
             foreach (var filter in request.FilterModel)
             {
                 string column = filter.Key;
                 var model = filter.Value;
-                string paramName = $":filter_{paramIndex}";
 
-                // Handle date filters differently
-                if (model.Type?.ToLower() == "date")
+                // Handle compound filters with Conditions
+                if (model.Conditions != null && model.Conditions.Any())
                 {
-                    var dateCondition = HandleDateFilter(column, model, parameters, ref paramIndex);
-                    if (!string.IsNullOrEmpty(dateCondition))
-                        conditions.Add(dateCondition);
-                    continue;
-                }
+                    var nestedConditions = new List<string>();
+                    foreach (var condition in model.Conditions)
+                    {
+                        string nestedCondition = BuildCondition(column, condition, ref paramIndex, parameters);
+                        if (!string.IsNullOrEmpty(nestedCondition))
+                        {
+                            nestedConditions.Add(nestedCondition);
+                        }
+                    }
 
-                switch (model.Type?.ToLower())
+                    if (nestedConditions.Any())
+                    {
+                        string op = model.Operator?.ToUpper() == "OR" ? " OR " : " AND ";
+                        conditions.Add($"({string.Join(op, nestedConditions)})");
+                    }
+                }
+                else
                 {
-                    case "equals":
-                        conditions.Add($"{column} = {paramName}");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "notequals":
-                        conditions.Add($"{column} != {paramName}");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "blank":
-                        // For NULL or empty string (Oracle treats empty string as NULL)
-                        conditions.Add($"({column} IS NULL OR {column} = '')");
-                        break;
-
-                    case "notblank":
-                        // For NOT NULL and not empty string
-                        conditions.Add($"({column} IS NOT NULL AND {column} != '')");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "contains":
-                        conditions.Add($"{column} LIKE '%' || {paramName} || '%'");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "notcontains":
-                        conditions.Add($"{column} NOT LIKE '%' || {paramName} || '%'");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "startswith":
-                        conditions.Add($"{column} LIKE {paramName} || '%'");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "endswith":
-                        conditions.Add($"{column} LIKE '%' || {paramName}");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "greaterthan":
-                        conditions.Add($"{column} > {paramName}");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "lessthan":
-                        conditions.Add($"{column} < {paramName}");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "greaterthanorequals":
-                        conditions.Add($"{column} >= {paramName}");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-                    case "lessthanorequals":
-                        conditions.Add($"{column} <= {paramName}");
-                        parameters.Add(new OracleParameter(paramName, model.Filter));
-                        break;
-
-
-
-
-                    // Add more filter types as needed
-                    default:
-                        throw new NotSupportedException($"Filter type '{model.Type}' is not supported.");
+                    string condition = BuildCondition(column, model, ref paramIndex, parameters);
+                    if (!string.IsNullOrEmpty(condition))
+                    {
+                        conditions.Add(condition);
+                    }
                 }
-
-                paramIndex++;
             }
 
             return conditions.Any() ? " WHERE " + string.Join(" AND ", conditions) : "";
+        }
+
+        private string BuildCondition(string column, FilterModel model, ref int paramIndex, List<OracleParameter> parameters)
+        {
+            string paramName = $":filter_{paramIndex}";
+
+            // Handle date filters differently
+            if (model.Type?.ToLower() == "date")
+            {
+                return HandleDateFilter(column, model, parameters, ref paramIndex);
+            }
+
+            switch (model.Type?.ToLower())
+            {
+                case "equals":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} = {paramName}";
+
+                case "notequals":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} != {paramName}";
+
+                case "blank":
+                    return $"({column} IS NULL OR {column} = '')";
+
+                case "notblank":
+                    return $"({column} IS NOT NULL AND {column} != '')";
+
+                case "contains":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} LIKE '%' || {paramName} || '%'";
+
+                case "notcontains":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} NOT LIKE '%' || {paramName} || '%'";
+
+                case "startswith":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} LIKE {paramName} || '%'";
+
+                case "endswith":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} LIKE '%' || {paramName}";
+
+                case "greaterthan":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} > {paramName}";
+
+                case "lessthan":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} < {paramName}";
+
+                case "greaterthanorequals":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} >= {paramName}";
+
+                case "lessthanorequals":
+                    parameters.Add(new OracleParameter(paramName, model.Filter));
+                    return $"{column} <= {paramName}";
+
+                default:
+                    throw new NotSupportedException($"Filter type '{model.Type}' is not supported.");
+            }
         }
 
         private string HandleDateFilter(string column, FilterModel model, List<OracleParameter> parameters, ref int paramIndex)
@@ -544,6 +550,131 @@ namespace ReportsBackend.Infrastracture.Helpers
 
             return dateConditions.Any() ? string.Join(" AND ", dateConditions) : "";
         }
+
+        //private string BuildWhereClause(GridRequest request, List<OracleParameter> parameters)
+        //{
+        //    if (request.FilterModel == null || !request.FilterModel.Any())
+        //        return "";
+
+        //    var conditions = new List<string>();
+        //    int paramIndex = 0;
+
+
+
+        //    foreach (var filter in request.FilterModel)
+        //    {
+        //        string column = filter.Key;
+        //        var model = filter.Value;
+        //        string paramName = $":filter_{paramIndex}";
+
+        //        // Handle date filters differently
+        //        if (model.Type?.ToLower() == "date")
+        //        {
+        //            var dateCondition = HandleDateFilter(column, model, parameters, ref paramIndex);
+        //            if (!string.IsNullOrEmpty(dateCondition))
+        //                conditions.Add(dateCondition);
+        //            continue;
+        //        }
+
+        //        switch (model.Type?.ToLower())
+        //        {
+        //            case "equals":
+        //                conditions.Add($"{column} = {paramName}");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "notequals":
+        //                conditions.Add($"{column} != {paramName}");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "blank":
+        //                // For NULL or empty string (Oracle treats empty string as NULL)
+        //                conditions.Add($"({column} IS NULL OR {column} = '')");
+        //                break;
+
+        //            case "notblank":
+        //                // For NOT NULL and not empty string
+        //                conditions.Add($"({column} IS NOT NULL AND {column} != '')");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "contains":
+        //                conditions.Add($"{column} LIKE '%' || {paramName} || '%'");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "notcontains":
+        //                conditions.Add($"{column} NOT LIKE '%' || {paramName} || '%'");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "startswith":
+        //                conditions.Add($"{column} LIKE {paramName} || '%'");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "endswith":
+        //                conditions.Add($"{column} LIKE '%' || {paramName}");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "greaterthan":
+        //                conditions.Add($"{column} > {paramName}");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "lessthan":
+        //                conditions.Add($"{column} < {paramName}");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "greaterthanorequals":
+        //                conditions.Add($"{column} >= {paramName}");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+        //            case "lessthanorequals":
+        //                conditions.Add($"{column} <= {paramName}");
+        //                parameters.Add(new OracleParameter(paramName, model.Filter));
+        //                break;
+
+
+
+
+        //            // Add more filter types as needed
+        //            default:
+        //                throw new NotSupportedException($"Filter type '{model.Type}' is not supported.");
+        //        }
+
+        //        paramIndex++;
+        //    }
+
+        //    return conditions.Any() ? " WHERE " + string.Join(" AND ", conditions) : "";
+        //}
+
+        //private string HandleDateFilter(string column, FilterModel model, List<OracleParameter> parameters, ref int paramIndex)
+        //{
+        //    var dateConditions = new List<string>();
+
+        //    // Handle dateFrom
+        //    if (!string.IsNullOrEmpty(model.DateFrom))
+        //    {
+        //        string fromParam = $":dateFrom_{paramIndex++}";
+        //        dateConditions.Add($"{column} >= TO_DATE({fromParam}, 'YYYY-MM-DD')");
+        //        parameters.Add(new OracleParameter(fromParam, model.DateFrom));
+        //    }
+
+        //    // Handle dateTo
+        //    if (!string.IsNullOrEmpty(model.DateTo))
+        //    {
+        //        string toParam = $":dateTo_{paramIndex++}";
+        //        dateConditions.Add($"{column} <= TO_DATE({toParam}, 'YYYY-MM-DD')");
+        //        parameters.Add(new OracleParameter(toParam, model.DateTo));
+        //    }
+
+        //    return dateConditions.Any() ? string.Join(" AND ", dateConditions) : "";
+        //}
         private string BuildOrderByClause(GridRequest request)
         {
             if (request.SortModel == null || !request.SortModel.Any())
