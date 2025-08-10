@@ -16,5 +16,7 @@ namespace ReportsBackend.Domain.AG_Grid
         //public List<string>? GroupKeys { get; set; }
         public List<string>? SqlParameters { get; set; }
 
+        public string? SearchTerm { get; set; }
+
     }
 }

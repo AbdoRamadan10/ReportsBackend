@@ -11,6 +11,8 @@ namespace ReportsBackend.Infrastracture.Helpers
 {
     public class OracleSqlExecutor
     {
+
+        private static readonly Dictionary<string, List<string>> _columnCache = new Dictionary<string, List<string>>();
         private readonly string _connectionString;
 
         public OracleSqlExecutor(string connectionString)
@@ -397,7 +399,7 @@ namespace ReportsBackend.Infrastracture.Helpers
             var combinedParameters = new List<OracleParameter>(parameters);
 
             // 1. Build WHERE clause
-            string whereClause = BuildWhereClause(gridRequest, combinedParameters);
+            string whereClause = BuildWhereClause(gridRequest, combinedParameters, baseSql);
 
             // 2. Build ORDER BY clause
             string orderByClause = BuildOrderByClause(gridRequest);
@@ -420,50 +422,74 @@ namespace ReportsBackend.Infrastracture.Helpers
             return response;
         }
 
-        private string BuildWhereClause(GridRequest request, List<OracleParameter> parameters)
+        private string BuildWhereClause(GridRequest request, List<OracleParameter> parameters, string baseSql)
         {
-            if (request.FilterModel == null || !request.FilterModel.Any())
-                return "";
-
             var conditions = new List<string>();
             int paramIndex = parameters.Count;
 
-            foreach (var filter in request.FilterModel)
+            // Handle global search term if present
+            if (!string.IsNullOrEmpty(request.SearchTerm))
             {
-                string column = filter.Key;
-                var model = filter.Value;
+                string searchParam = $":search_{paramIndex++}";
+                parameters.Add(new OracleParameter(searchParam, $"%{request.SearchTerm}%"));
 
-                // Handle compound filters with Conditions
-                if (model.Conditions != null && model.Conditions.Any())
+                // Get all columns from the table (since query uses SELECT *)
+                var tableName = ExtractTableNameFromSql(baseSql);
+                var allColumns = GetTableColumns(tableName);
+
+                if (allColumns.Any())
                 {
-                    var nestedConditions = new List<string>();
-                    foreach (var condition in model.Conditions)
+                    var columnConditions = allColumns
+                        .Select(col =>
+                            // Handle different data types by converting to string
+                            $"TO_CHAR({col}) LIKE {searchParam}")
+                        .ToList();
+
+                    conditions.Add($"({string.Join(" OR ", columnConditions)})");
+                }
+            }
+
+            // Handle regular column filters if present
+            if (request.FilterModel != null && request.FilterModel.Any())
+            {
+                foreach (var filter in request.FilterModel)
+                {
+                    string column = filter.Key;
+                    var model = filter.Value;
+
+                    // Handle compound filters with Conditions
+                    if (model.Conditions != null && model.Conditions.Any())
                     {
-                        string nestedCondition = BuildCondition(column, condition, ref paramIndex, parameters);
-                        if (!string.IsNullOrEmpty(nestedCondition))
+                        var nestedConditions = new List<string>();
+                        foreach (var condition in model.Conditions)
                         {
-                            nestedConditions.Add(nestedCondition);
+                            string nestedCondition = BuildCondition(column, condition, ref paramIndex, parameters);
+                            if (!string.IsNullOrEmpty(nestedCondition))
+                            {
+                                nestedConditions.Add(nestedCondition);
+                            }
+                        }
+
+                        if (nestedConditions.Any())
+                        {
+                            string op = model.Operator?.ToUpper() == "OR" ? " OR " : " AND ";
+                            conditions.Add($"({string.Join(op, nestedConditions)})");
                         }
                     }
-
-                    if (nestedConditions.Any())
+                    else
                     {
-                        string op = model.Operator?.ToUpper() == "OR" ? " OR " : " AND ";
-                        conditions.Add($"({string.Join(op, nestedConditions)})");
-                    }
-                }
-                else
-                {
-                    string condition = BuildCondition(column, model, ref paramIndex, parameters);
-                    if (!string.IsNullOrEmpty(condition))
-                    {
-                        conditions.Add(condition);
+                        string condition = BuildCondition(column, model, ref paramIndex, parameters);
+                        if (!string.IsNullOrEmpty(condition))
+                        {
+                            conditions.Add(condition);
+                        }
                     }
                 }
             }
 
             return conditions.Any() ? " WHERE " + string.Join(" AND ", conditions) : "";
         }
+
 
         private string BuildCondition(string column, FilterModel model, ref int paramIndex, List<OracleParameter> parameters)
         {
@@ -675,6 +701,52 @@ namespace ReportsBackend.Infrastracture.Helpers
 
         //    return dateConditions.Any() ? string.Join(" AND ", dateConditions) : "";
         //}
+
+        private string ExtractTableNameFromSql(string sql)
+        {
+            // Simple extraction for "SELECT * FROM table_name" pattern
+            var fromIndex = sql.IndexOf(" FROM ", StringComparison.OrdinalIgnoreCase);
+            if (fromIndex < 0) return string.Empty;
+
+            var remaining = sql.Substring(fromIndex + 6).Trim();
+            var spaceIndex = remaining.IndexOf(' ');
+            return spaceIndex > 0 ? remaining.Substring(0, spaceIndex) : remaining;
+        }
+
+        private List<string> GetTableColumns(string tableName)
+        {
+            if (string.IsNullOrEmpty(tableName))
+                return new List<string>();
+
+            //Cache the columns to avoid repeated database queries
+            if (_columnCache.TryGetValue(tableName, out var cachedColumns))
+                return cachedColumns;
+
+            var columns = new List<string>();
+            string query = @"
+    SELECT column_name 
+    FROM all_tab_columns 
+    WHERE UPPER(table_name) = UPPER(:tableName)
+    AND data_type IN ('VARCHAR2','CHAR','CLOB','NUMBER','DATE','TIMESTAMP','NVARCHAR2','NCHAR')";
+            using (var connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = new OracleCommand(query, connection))
+                {
+                    command.Parameters.Add("tableName", tableName.ToUpper());
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            columns.Add(reader["column_name"].ToString());
+                        }
+                    }
+                }
+            }
+
+            _columnCache[tableName] = columns; // Cache the results
+            return columns;
+        }
         private string BuildOrderByClause(GridRequest request)
         {
             if (request.SortModel == null || !request.SortModel.Any())
