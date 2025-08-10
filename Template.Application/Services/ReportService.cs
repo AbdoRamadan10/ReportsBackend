@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ReportsBackend.Application.DTOs.Report;
+using ReportsBackend.Application.DTOs.ReportColumn;
 using ReportsBackend.Domain.Entities;
 using ReportsBackend.Domain.Exceptions;
 using ReportsBackend.Domain.Helpers;
@@ -12,12 +13,14 @@ namespace ReportsBackend.Application.Services
     public class ReportService
     {
         private readonly IGenericRepository<Report> _reportRepository;
+        private readonly IGenericRepository<ReportColumn> _reportColumnRepository;
         private readonly IMapper _mapper;
 
-        public ReportService(IGenericRepository<Report> reportRepository, IMapper mapper)
+        public ReportService(IGenericRepository<Report> reportRepository, IMapper mapper, IGenericRepository<ReportColumn> reportColumnRepository)
         {
             _reportRepository = reportRepository;
             _mapper = mapper;
+            _reportColumnRepository = reportColumnRepository;
         }
 
         public async Task<PaginatedResult<ReportDto>> GetAllAsync(FindOptions options)
@@ -65,6 +68,43 @@ namespace ReportsBackend.Application.Services
             await _reportRepository.Delete(report);
         }
 
+
+        public async Task<List<ReportColumnDto>> GetColumnsByReportIdAsync(int reportId)
+        {
+            var report = await _reportRepository.GetByIdAsync(reportId, q => q.Include(t => t.Columns));
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+
+            var columns = await _reportColumnRepository.GetAllAsync(new FindOptions { });
+            return _mapper.Map<List<ReportColumnDto>>(columns.Items);
+        }
+
+        public async Task<ReportColumnDto> GetColumnByIdAsync(int id)
+        {
+            var column = await _reportColumnRepository.GetByIdAsync(id);
+            if (column == null)
+                throw new NotFoundException("ReportColumn", id.ToString());
+            return _mapper.Map<ReportColumnDto>(column);
+
+        }
+        public async Task<List<ReportColumnDto>> CreateColumnsAsync(int reportId, List<ReportColumnCreateDto> reportColumns)
+        {
+            var report = await _reportRepository.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+
+            foreach (var columnDto in reportColumns)
+            {
+                var column = _mapper.Map<ReportColumn>(columnDto);
+                column.ReportId = reportId;
+                await _reportColumnRepository.AddAsync(column);
+            }
+
+
+            var columns = _mapper.Map<List<ReportColumnDto>>(reportColumns);
+            return columns;
+
+        }
 
 
     }

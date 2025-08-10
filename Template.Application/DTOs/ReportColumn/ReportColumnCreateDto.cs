@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ReportsBackend.Application.DTOs.ReportColumn
 {
-    public class ReportColumnDto
+    public class ReportColumnCreateDto
     {
-        public int Id { get; set; }
         public string? Field { get; set; }
         public string? HeaderName { get; set; }
         public bool? Sortable { get; set; }

@@ -27,6 +27,13 @@ namespace ReportsBackend.Application.Mappings
             CreateMap<ReportCreateDto, Report>();
             CreateMap<ReportUpdateDto, Report>();
 
+            CreateMap<ReportColumn, ReportColumnDto>().ReverseMap();
+            CreateMap<ReportColumnCreateDto, ReportColumn>();
+            CreateMap<ReportColumnCreateDto, ReportColumnDto>().ReverseMap();
+
+
+
+
 
         }
     }

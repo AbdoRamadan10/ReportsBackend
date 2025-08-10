@@ -18,6 +18,7 @@ using ReportsBackend.Infrastracture.Helpers;
 using ReportsBackend.Domain.Exceptions;
 using ReportsBackend.Application.DTOs.Role;
 using ReportsBackend.Domain.AG_Grid;
+using ReportsBackend.Application.DTOs.ReportColumn;
 
 namespace ReportsBackend.Api.Controllers
 {
@@ -546,6 +547,31 @@ namespace ReportsBackend.Api.Controllers
 
 
         }
+
+
+        [HttpGet("columns/{reportId}")]
+        public async Task<ActionResult<List<ReportColumnDto>>> GetColumnsByReportId(int reportId)
+        {
+
+            var columns = await _reportService.GetColumnsByReportIdAsync(reportId);
+            return Ok(columns);
+        }
+
+
+
+
+
+
+
+        [HttpPost("columns/{reportId}")]
+        public async Task<ActionResult<List<ReportColumnDto>>> CreateColumn(int reportId, List<ReportColumnCreateDto> columns)
+        {
+
+            await _reportService.CreateColumnsAsync(reportId, columns);
+            return Ok(columns);
+
+        }
+
 
     }
 }
