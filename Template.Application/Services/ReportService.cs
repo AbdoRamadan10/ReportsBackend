@@ -106,6 +106,19 @@ namespace ReportsBackend.Application.Services
 
         }
 
+        public async Task<ReportColumnDto> UpdateColumnAsync(int reportId, int columnId, ReportColumnCreateDto dto)
+        {
+            var report = await _reportRepository.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+            var column = await _reportColumnRepository.GetByIdAsync(columnId);
+            if (column == null)
+                throw new NotFoundException("ReportColumn", columnId.ToString());
+            _mapper.Map(dto, column);
+            await _reportColumnRepository.Update(column);
+            return _mapper.Map<ReportColumnDto>(column);
+        }
+
 
     }
 }

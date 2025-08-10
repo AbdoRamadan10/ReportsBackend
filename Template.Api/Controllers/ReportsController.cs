@@ -549,7 +549,7 @@ namespace ReportsBackend.Api.Controllers
         }
 
 
-        [HttpGet("columns/{reportId}")]
+        [HttpGet("{reportId}/columns")]
         public async Task<ActionResult<List<ReportColumnDto>>> GetColumnsByReportId(int reportId)
         {
 
@@ -563,13 +563,20 @@ namespace ReportsBackend.Api.Controllers
 
 
 
-        [HttpPost("columns/{reportId}")]
-        public async Task<ActionResult<List<ReportColumnDto>>> CreateColumn(int reportId, List<ReportColumnCreateDto> columns)
+        [HttpPost("{reportId}/columns")]
+        public async Task<ActionResult<List<ReportColumnDto>>> CreateColumnsForReport(int reportId, List<ReportColumnCreateDto> columns)
         {
 
             await _reportService.CreateColumnsAsync(reportId, columns);
             return Ok(columns);
 
+        }
+
+        [HttpPut("{reportId}/columns/{columnId}")]
+        public async Task<IActionResult> UpdateColumn(int reportId, int columnId, [FromBody] ReportColumnCreateDto dto)
+        {
+            await _reportService.UpdateColumnAsync(reportId, columnId, dto);
+            return NoContent();
         }
 
 
