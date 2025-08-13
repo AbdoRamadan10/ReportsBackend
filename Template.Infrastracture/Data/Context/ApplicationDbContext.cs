@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ReportsBackend.Domain.Entities;
+using ReportsBackend.Infrastracture.Interfaces;
+using ReportsBackend.Infrastracture.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +14,10 @@ namespace ReportsBackend.Infrastracture.Data.Context
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        private readonly ICurrentUserService _currentUserService;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService) : base(options)
         {
+            _currentUserService = currentUserService;
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -93,6 +97,8 @@ namespace ReportsBackend.Infrastracture.Data.Context
 
 
         }
+
+        private string GetCurrentUserId() => _currentUserService.UserId ?? "system";
     }
 }
 

@@ -32,9 +32,9 @@ namespace ReportsBackend.Infrastracture.Services.Identity
                 //new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 //new Claim(ClaimTypes.Name,user.Username.ToString()),
                 //new Claim(ClaimTypes.Email, user.Email),   
-                new Claim("Id", user.Id.ToString()),
-                new Claim("Username",user.Username.ToString()),
-                new Claim("Email", user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name,user.Username.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
                 //new Claim(ClaimTypes.Role, user.Role)
             };
 

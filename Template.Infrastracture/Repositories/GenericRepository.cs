@@ -18,8 +18,8 @@ namespace ReportsBackend.Infrastracture.Repositories
     {
         protected readonly ApplicationDbContext _context;
         protected readonly DbSet<T> _dbSet;
-        private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<GenericRepository<T>> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
         public GenericRepository(ApplicationDbContext context,
             ICurrentUserService currentUserService,
@@ -28,8 +28,8 @@ namespace ReportsBackend.Infrastracture.Repositories
         {
             _context = context;
             _dbSet = context.Set<T>();
-            _currentUserService = currentUserService;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
         public async Task<PaginatedResult<T>> GetAllAsync(FindOptions options, params Func<IQueryable<T>, IQueryable<T>>[] includes)
