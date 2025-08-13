@@ -80,7 +80,13 @@ else
                 try
                 {
                     var uri = new Uri(origin);
-                    return uri.Host == "localhost" || uri.Host.StartsWith("192.168.40") || uri.Host.StartsWith("192.168.8") || uri.Host.StartsWith("192.168.20");
+                    return uri.Host == "localhost" ||
+                    uri.Host.StartsWith("192.168.40") ||
+                    uri.Host.StartsWith("192.168.8") ||
+                    uri.Host.StartsWith("192.168.20") ||
+                    uri.Host.StartsWith("192.168.3") ||
+                    uri.Host.StartsWith("1.23") ||
+                    uri.Host.StartsWith("dsr");
 
                 }
                 catch
@@ -135,13 +141,13 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSwagger();
 app.UseSwaggerUI();
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var applicationDbcontext = services.GetRequiredService<ApplicationDbContext>();
-    applicationDbcontext.Database.EnsureCreated();
-    ApplicationInitializer.Initializer(applicationDbcontext);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var applicationDbcontext = services.GetRequiredService<ApplicationDbContext>();
+//    applicationDbcontext.Database.EnsureCreated();
+//    ApplicationInitializer.Initializer(applicationDbcontext);
+//}
 
 app.UseCors("AllowReactApp");
 

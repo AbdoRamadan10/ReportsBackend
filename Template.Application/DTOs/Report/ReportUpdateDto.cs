@@ -7,6 +7,8 @@
         public string? Query { get; set; }
         public string? Path { get; set; }
         public bool HasDetail { get; set; } = false;
+        public bool Active { get; set; }
+        public bool Hide { get; set; }
         public int? DetailId { get; set; }
         public string? DetailColumn { get; set; }
         public int? PrivilegeId { get; set; }

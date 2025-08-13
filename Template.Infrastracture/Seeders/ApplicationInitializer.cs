@@ -14,15 +14,15 @@ namespace ReportsBackend.Infrastracture.Seeders
         {
             context.Database.EnsureCreated();
             ScreenSeeds.ScreenInitializer(context);
-            ProductSeeds.ProductInitializer(context);
+            //ProductSeeds.ProductInitializer(context);
             PrivilegeSeeds.PrivilegeInitializer(context);
             RoleSeeds.RoleInitializer(context);
             ReportSeeds.ReportInitializer(context);
             ReportColumnSeeds.ReportColumnInitializer(context);
-            ReportParameterSeeds.ReportParameterInitializer(context);
+            //ReportParameterSeeds.ReportParameterInitializer(context);
             RoleReportSeeds.RoleReportInitializer(context);
             RoleScreenSeeds.RoleScreenInitializer(context);
-            StudentSeedData.Initialize(context);
+            //StudentSeedData.Initialize(context);
             context.SaveChanges();
         }
 

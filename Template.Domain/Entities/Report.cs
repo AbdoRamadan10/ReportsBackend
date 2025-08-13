@@ -8,8 +8,11 @@
         public string? Query { get; set; }
         public string? Path { get; set; }
         public bool HasDetail { get; set; } = false;
+        public bool Active { get; set; } = true;
+        public bool Hide { get; set; } = false;
         public int? DetailId { get; set; }
         public string? DetailColumn { get; set; }
+
 
         public List<ReportColumn>? Columns { get; set; }
         public List<ReportParameter>? Parameters { get; set; }
