@@ -16,6 +16,7 @@ using ReportsBackend.Infrastracture.Seeders;
 using ReportsBackend.Domain.Interfaces;
 using ReportsBackend.Infrastracture.Repositories;
 using ReportsBackend.Infrastracture.Helpers;
+using ReportsBackend.Infrastracture.Interfaces;
 
 namespace ReportsBackend.Infrastracture.Extensions
 {
@@ -70,6 +71,8 @@ namespace ReportsBackend.Infrastracture.Extensions
             services.AddScoped<IUserService, UserService>();
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddHttpContextAccessor();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 
 

@@ -88,6 +88,8 @@ namespace ReportsBackend.Infrastracture.Data.Context
                 .WithMany(r => r.RoleScreens)
                 .HasForeignKey(ur => ur.ScreenId);
 
+            modelBuilder.Entity<Report>().HasQueryFilter(p => !p.IsDeleted);
+
 
 
         }
