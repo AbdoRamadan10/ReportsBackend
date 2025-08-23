@@ -391,9 +391,9 @@ namespace ReportsBackend.Infrastracture.Helpers
         //    }
 
         public async Task<GridResponse<Dictionary<string, object>>> ExecuteGridQueryAsyncFinal(
-    string baseSql,
-    GridRequest gridRequest,
-    params OracleParameter[] parameters)
+                      string baseSql,
+                      GridRequest gridRequest,
+                      params OracleParameter[] parameters)
         {
             var response = new GridResponse<Dictionary<string, object>>();
             var combinedParameters = new List<OracleParameter>(parameters);
@@ -489,7 +489,6 @@ namespace ReportsBackend.Infrastracture.Helpers
 
             return conditions.Any() ? " WHERE " + string.Join(" AND ", conditions) : "";
         }
-
 
         private string BuildCondition(string column, FilterModel model, ref int paramIndex, List<OracleParameter> parameters)
         {

@@ -42,6 +42,7 @@ namespace ReportsBackend.Api.Controllers
             return Ok(roles);
         }
 
+
         [HttpPost]
         public async Task<ActionResult<RoleDto>> Create([FromBody] RoleCreateDto dto)
         {

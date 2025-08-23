@@ -19,6 +19,7 @@ using ReportsBackend.Domain.Exceptions;
 using ReportsBackend.Application.DTOs.Role;
 using ReportsBackend.Domain.AG_Grid;
 using ReportsBackend.Application.DTOs.ReportColumn;
+using ReportsBackend.Application.DTOs.ReportParameter;
 
 namespace ReportsBackend.Api.Controllers
 {
@@ -39,6 +40,7 @@ namespace ReportsBackend.Api.Controllers
 
         }
 
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReportDto>>> GetAll([FromQuery] FindOptions options)
         {
@@ -54,6 +56,7 @@ namespace ReportsBackend.Api.Controllers
             return Ok(report);
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public async Task<ActionResult<ReportDto>> Create([FromBody] ReportCreateDto dto)
         {
@@ -62,6 +65,7 @@ namespace ReportsBackend.Api.Controllers
             return Ok(created);
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ReportUpdateDto dto)
         {
@@ -69,6 +73,7 @@ namespace ReportsBackend.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -76,437 +81,52 @@ namespace ReportsBackend.Api.Controllers
             return NoContent();
         }
 
-        [HttpGet("export")]
-        public async Task<IActionResult> ExportReports([FromQuery] FindOptions options)
-        {
-            var reportsResult = await _reportService.GetAllAsync(options);
-            var reports = reportsResult.Items;
-
-            var csv = new StringBuilder();
-            // Header
-            csv.AppendLine("Id,Name,Description,Path,PrivilegeId,PrivilegeName");
-
-            // Rows
-            foreach (var report in reports)
-            {
-                csv.AppendLine($"{report.Id},\"{report.Name}\",\"{report.Description}\",\"{report.Path}\",{report.PrivilegeId},\"{report.PrivilegeName}\"");
-            }
-
-            var bytes = Encoding.UTF8.GetBytes(csv.ToString());
-            return File(bytes, "text/csv", "reports_export.csv");
-        }
-
-        [HttpGet("export-file")]
-        public async Task<IActionResult> ExportReportsFile([FromQuery] FindOptions options, [FromQuery] string format = "pdf")
-        {
-            var reportsResult = await _reportService.GetAllAsync(options);
-            var reports = reportsResult.Items.ToList();
-
-            var columns = new List<ColumnDefinition<ReportDto>>
-                {
-                    new() { Header = "Id", ValueSelector = r => r.Id.ToString() },
-                    new() { Header = "Name", ValueSelector = r => r.Name },
-                    new() { Header = "Description", ValueSelector = r => r.Description },
-                    new() { Header = "Path", ValueSelector = r => r.Path },
-                    new() { Header = "PrivilegeId", ValueSelector = r => r.PrivilegeId.ToString() },
-                    new() { Header = "PrivilegeName", ValueSelector = r => r.PrivilegeName }
-                };
-
-            if (format.ToLower() == "excel" || format.ToLower() == "xlsx" || format.ToLower() == "csv")
-            {
-                var excelBytes = ExcelExportHelper.GenerateTableExcel(reports, columns, "Reports Export");
-                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "reports_export.xlsx");
-            }
-            else // default to PDF
-            {
-                var pdfBytes = PdfExportHelper.GenerateTablePdf(reports, columns, "Reports Export");
-                return File(pdfBytes, "application/pdf", "reports_export.pdf");
-            }
-        }
-
-        //[HttpPost("execute")]
-        //public async Task<List<object>> GetEmployees(int reportId, Dictionary<string, object> parameters = null,
-        //     Dictionary<string, object> filterParameters = null
-        //    )
+        //[HttpGet("export")]
+        //public async Task<IActionResult> ExportReports([FromQuery] FindOptions options)
         //{
-        //    var report = await _reportService.GetByIdAsync(reportId);
-        //    if (report == null)
-        //        new NotFoundException("Report", reportId.ToString());
+        //    var reportsResult = await _reportService.GetAllAsync(options);
+        //    var reports = reportsResult.Items;
 
-        //    var sql = report.Query;
+        //    var csv = new StringBuilder();
+        //    // Header
+        //    csv.AppendLine("Id,Name,Description,Path,PrivilegeId,PrivilegeName");
 
-        //    var oracleParameters = new List<OracleParameter>();
-
-
-
-        //    foreach (var param in report.Parameters)
+        //    // Rows
+        //    foreach (var report in reports)
         //    {
-        //        oracleParameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+        //        csv.AppendLine($"{report.Id},\"{report.Name}\",\"{report.Description}\",\"{report.Path}\",{report.PrivilegeId},\"{report.PrivilegeName}\"");
         //    }
 
-        //    if (parameters != null)
-        //    {
-        //        foreach (var param in oracleParameters)
-        //        {
-
-        //            if (parameters.TryGetValue(param.ParameterName, out var value))
-        //            {
-        //                param.Value = value;
-        //            }
-        //            else
-        //            {
-        //                // If the parameter is not provided, use the default value
-        //                param.Value = param.Value ?? DBNull.Value;
-        //            }
-        //        }
-        //    }
-
-
-        //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, oracleParameters.ToArray());
-
-
-        //    if (filterParameters != null && filterParameters.Any())
-        //    {
-        //        results.Where(row =>
-        //        {
-        //            foreach (var filter in filterParameters)
-        //            {
-        //                if (!row.ContainsKey(filter.Key))
-        //                    return false; // Column doesn't exist
-
-        //                var rowValue = row[filter.Key];
-        //                var filterValue = filter.Value;
-
-        //                // Handle null comparisons
-        //                if (rowValue == null && filterValue == null) continue;
-        //                if (rowValue == null || filterValue == null) return false;
-
-        //                // Simple equality comparison (you can enhance this)
-        //                if (!rowValue.ToString().Equals(filterValue.ToString(), StringComparison.OrdinalIgnoreCase))
-        //                    return false;
-        //            }
-        //            return true;
-        //        }).ToList();
-        //    }
-
-
-
-
-        //    var result = new List<object>();
-        //    foreach (var row in results)
-        //    {
-        //        var item = new Dictionary<string, object>();
-        //        foreach (var column in row)
-        //        {
-        //            item[column.Key] = column.Value;
-        //        }
-        //        result.Add(item);
-        //    }
-
-
-
-        //    return result;
-
-
-
-
-
-        //    //    var sql = "select * from \"Reports\" where \"Name\" = :name_id";
-        //    //    var parameters = new OracleParameter[]
-        //    //    {
-        //    //new OracleParameter("name_id", OracleDbType.NVarchar2) { Value = 'a' }
-        //    //    };
-
-        //    //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters);
-
-        //    //    return results.Select(row => new ReportDto
-        //    //    {
-        //    //        Id = Convert.ToInt32(row["Id"]),
-        //    //        Name = row["Name"].ToString(),
-        //    //        Description = row["Description"].ToString(),
-        //    //        Path = row["Path"].ToString(),
-        //    //        PrivilegeId = Convert.ToInt32(row["PrivilegeId"]),
-        //    //    }).ToList();
+        //    var bytes = Encoding.UTF8.GetBytes(csv.ToString());
+        //    return File(bytes, "text/csv", "reports_export.csv");
         //}
 
-
-
-
-
-
-
-
-
-
-
-
-        //[HttpPost("execute")]
-        //public async Task<List<object>> GetEmployees(int reportId, [FromBody] ExecuteReportRequest request = null
-
-        //    )
+        //[HttpGet("export-file")]
+        //public async Task<IActionResult> ExportReportsFile([FromQuery] FindOptions options, [FromQuery] string format = "pdf")
         //{
+        //    var reportsResult = await _reportService.GetAllAsync(options);
+        //    var reports = reportsResult.Items.ToList();
 
-
-        //    //var parameters = request?.Parameters;
-        //    //var filterParameters = request?.FilterParameters;
-
-
-        //    // Convert all parameter keys to uppercase
-        //    var parameters = request?.Parameters?.ToDictionary(
-        //        kvp => kvp.Key.ToUpperInvariant(),
-        //        kvp => kvp.Value,
-        //        StringComparer.OrdinalIgnoreCase);
-
-        //    // Convert all filter parameter keys to uppercase
-        //    var filterParameters = request?.FilterParameters?.ToDictionary(
-        //        kvp => kvp.Key.ToUpperInvariant(),
-        //        kvp => kvp.Value,
-        //        StringComparer.OrdinalIgnoreCase);
-
-
-
-
-        //    var report = await _reportService.GetByIdAsync(reportId);
-        //    if (report == null)
-        //        new NotFoundException("Report", reportId.ToString());
-
-        //    var sql = report.Query;
-
-        //    var oracleParameters = new List<OracleParameter>();
-
-
-
-        //    foreach (var param in report.Parameters)
-        //    {
-        //        oracleParameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-        //    }
-
-        //    if (parameters != null)
-        //    {
-        //        foreach (var param in oracleParameters)
+        //    var columns = new List<ColumnDefinition<ReportDto>>
         //        {
+        //            new() { Header = "Id", ValueSelector = r => r.Id.ToString() },
+        //            new() { Header = "Name", ValueSelector = r => r.Name },
+        //            new() { Header = "Description", ValueSelector = r => r.Description },
+        //            new() { Header = "Path", ValueSelector = r => r.Path },
+        //            new() { Header = "PrivilegeId", ValueSelector = r => r.PrivilegeId.ToString() },
+        //            new() { Header = "PrivilegeName", ValueSelector = r => r.PrivilegeName }
+        //        };
 
-        //            if (parameters.TryGetValue(param.ParameterName, out var value))
-        //            {
-        //                param.Value = value;
-        //            }
-        //            else
-        //            {
-        //                // If the parameter is not provided, use the default value
-        //                param.Value = param.Value ?? DBNull.Value;
-        //            }
-        //        }
+        //    if (format.ToLower() == "excel" || format.ToLower() == "xlsx" || format.ToLower() == "csv")
+        //    {
+        //        var excelBytes = ExcelExportHelper.GenerateTableExcel(reports, columns, "Reports Export");
+        //        return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "reports_export.xlsx");
         //    }
-
-
-        //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, oracleParameters.ToArray());
-
-
-        //    if (filterParameters != null && filterParameters.Any())
+        //    else // default to PDF
         //    {
-        //        results = results.Select(row =>
-        //        {
-        //            foreach (var filter in filterParameters)
-        //            {
-        //                if (!row.ContainsKey(filter.Key))
-        //                    return null; // Column doesn't exist
-        //                var rowValue = row[filter.Key];
-        //                var filterValue = filter.Value;
-        //                // Handle null comparisons
-        //                if (rowValue == null && filterValue == null) continue;
-        //                if (rowValue == null || filterValue == null) return null;
-        //                // Simple equality comparison (you can enhance this)
-        //                if (!rowValue.ToString().Equals(filterValue.ToString(), StringComparison.OrdinalIgnoreCase))
-        //                    return null;
-        //            }
-        //            return row;
-        //        }).Where(r => r != null).ToList();
+        //        var pdfBytes = PdfExportHelper.GenerateTablePdf(reports, columns, "Reports Export");
+        //        return File(pdfBytes, "application/pdf", "reports_export.pdf");
         //    }
-
-
-
-
-        //    var result = new List<object>();
-        //    foreach (var row in results)
-        //    {
-        //        var item = new Dictionary<string, object>();
-        //        foreach (var column in row)
-        //        {
-        //            item[column.Key] = column.Value;
-        //        }
-        //        result.Add(item);
-        //    }
-
-
-
-        //    return result;
-
-
-
-
-
-        //    //    var sql = "select * from \"Reports\" where \"Name\" = :name_id";
-        //    //    var parameters = new OracleParameter[]
-        //    //    {
-        //    //new OracleParameter("name_id", OracleDbType.NVarchar2) { Value = 'a' }
-        //    //    };
-
-        //    //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters);
-
-        //    //    return results.Select(row => new ReportDto
-        //    //    {
-        //    //        Id = Convert.ToInt32(row["Id"]),
-        //    //        Name = row["Name"].ToString(),
-        //    //        Description = row["Description"].ToString(),
-        //    //        Path = row["Path"].ToString(),
-        //    //        PrivilegeId = Convert.ToInt32(row["PrivilegeId"]),
-        //    //    }).ToList();
-        //}
-
-
-        //[HttpPost("execute")]
-        //public async Task<ActionResult<List<object>>> Execute(int reportId)
-        //{
-        //    var report = await _reportService.GetByIdAsync(reportId);
-        //    if (report == null)
-        //        throw new NotFoundException("Report", reportId.ToString());
-        //    var sql = report.Query;
-
-        //    var parameters = new List<OracleParameter>();
-
-        //    foreach (var param in report.Parameters)
-        //    {
-        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-        //    }
-
-
-
-        //    var results = await _oracleExecutor.ExecuteQueryAsync(sql, parameters.ToArray());
-
-        //    return Ok(results);
-
-
-        //}
-
-        //[HttpPost("execute-paginated")]
-        //public async Task<ActionResult<List<object>>> ExecutePaginated(int reportId, [FromQuery] FindOptions options)
-        //{
-        //    var report = await _reportService.GetByIdAsync(reportId);
-        //    if (report == null)
-        //        throw new NotFoundException("Report", reportId.ToString());
-        //    var sql = report.Query;
-
-        //    var parameters = new List<OracleParameter>();
-
-        //    foreach (var param in report.Parameters)
-        //    {
-        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-        //    }
-
-
-
-        //    var results = await _oracleExecutor.ExecuteQueryAsyncPaginated(sql, options, parameters.ToArray());
-
-        //    return Ok(results);
-
-
-        //}
-
-        //[HttpPost("execute-paginated-sort")]
-        //public async Task<PaginatedResult<object>> ExecutePaginatedSort(int reportId, [FromQuery] FindOptions options)
-        //{
-        //    var report = await _reportService.GetByIdAsync(reportId);
-        //    if (report == null)
-        //        throw new NotFoundException("Report", reportId.ToString());
-        //    var sql = report.Query;
-
-        //    var parameters = new List<OracleParameter>();
-
-        //    foreach (var param in report.Parameters)
-        //    {
-        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-        //    }
-
-        //    var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
-
-
-
-        //    var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSort(sql, options, parameters.ToArray());
-
-        //    return new PaginatedResult<object>
-        //    {
-        //        Items = results,
-        //        PageNumber = options.PageNumber,
-        //        PageSize = options.PageSize,
-        //        TotalCount = totalCount
-        //    };
-
-
-
-
-        //}
-
-        //[HttpPost("execute-paginated-sort-filter")]
-        //public async Task<PaginatedResult<object>> ExecutePaginatedSortFilter(int reportId, [FromQuery] FindOptions options)
-        //{
-        //    var report = await _reportService.GetByIdAsync(reportId);
-        //    if (report == null)
-        //        throw new NotFoundException("Report", reportId.ToString());
-        //    var sql = report.Query;
-
-        //    var parameters = new List<OracleParameter>();
-
-        //    foreach (var param in report.Parameters)
-        //    {
-        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-        //    }
-
-        //    var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
-
-
-
-        //    var results = await _oracleExecutor.ExecuteQueryAsyncPaginatedSortFilter(sql, options, parameters.ToArray());
-
-        //    return new PaginatedResult<object>
-        //    {
-        //        Items = results,
-        //        PageNumber = options.PageNumber,
-        //        PageSize = options.PageSize,
-        //        TotalCount = totalCount
-        //    };
-
-
-
-
-        //}
-
-        //[HttpPost("execute-grid")]
-        //public async Task<ActionResult<List<object>>> ExecuteGrid(int reportId, GridRequest options)
-        //{
-        //    var report = await _reportService.GetByIdAsync(reportId);
-        //    if (report == null)
-        //        throw new NotFoundException("Report", reportId.ToString());
-        //    var sql = report.Query;
-
-        //    var parameters = new List<OracleParameter>();
-
-        //    foreach (var param in report.Parameters)
-        //    {
-        //        parameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
-        //    }
-
-        //    var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, parameters.ToArray());
-
-
-
-        //    var results = await _oracleExecutor.ExecuteGridQueryAsync(sql, options, parameters.ToArray());
-
-        //    return Ok(results);
-
-
-
-
-
         //}
 
         [HttpPost("execute-grid-final")]
@@ -532,20 +152,10 @@ namespace ReportsBackend.Api.Controllers
                 index++;
             }
 
-
-
             var totalCount = await _oracleExecutor.GetTotalCountAsync(sql, oracleParameters.ToArray());
-
-
-
             var results = await _oracleExecutor.ExecuteGridQueryAsyncFinal(sql, options, oracleParameters.ToArray());
 
             return Ok(results);
-
-
-
-
-
         }
 
 
@@ -556,11 +166,6 @@ namespace ReportsBackend.Api.Controllers
             var columns = await _reportService.GetColumnsByReportIdAsync(reportId);
             return Ok(columns);
         }
-
-
-
-
-
 
 
         [HttpPost("{reportId}/columns")]
@@ -578,6 +183,58 @@ namespace ReportsBackend.Api.Controllers
             await _reportService.UpdateColumnAsync(reportId, columnId, dto);
             return NoContent();
         }
+
+
+        [HttpPost("{reportId}/export-result")]
+        public async Task<IActionResult> ExportReportResult(
+            int reportId,
+            [FromBody] GridRequest options,
+            [FromQuery] string format = "excel")
+        {
+            options.EndRow = options.EndRow = int.MaxValue; // Set a high limit to get all results
+            var report = await _reportService.GetByIdAsync(reportId);
+            if (report == null)
+                throw new NotFoundException("Report", reportId.ToString());
+
+            var sql = report.Query;
+            var sqlParameters = report.Parameters?.OrderBy(p => p.Sort).ToList() ?? new List<ReportParameterDto>();
+            var oracleParameters = new List<OracleParameter>();
+            int index = 0;
+
+            foreach (var param in sqlParameters)
+            {
+                var value = (options.SqlParameters != null && options.SqlParameters.Count > index)
+                    ? options.SqlParameters[index]
+                    : param.DefaultValue;
+                oracleParameters.Add(new OracleParameter(param.Name, param.DataType) { Value = value });
+                index++;
+            }
+
+            var response = await _oracleExecutor.ExecuteGridQueryAsyncFinal(sql, options, oracleParameters.ToArray());
+
+            // If no results, return empty file
+            if (response == null || response.Rows == null || response.Rows.Count == 0)
+                return NoContent();
+
+            // Get headers from first row
+            var headers = response.Rows.First().Keys.ToList();
+
+            if (format.ToLower() == "pdf")
+            {
+                var pdfBytes = PdfExportHelper.GenerateDynamicTablePdf(response.Rows, headers, $"Report {report.Name} Export");
+                return File(pdfBytes, "application/pdf", $"report_{reportId}_result.pdf");
+            }
+            else // default to Excel
+            {
+                var excelBytes = ExcelExportHelper.GenerateDynamicTableExcel(response.Rows, headers, $"Report {report.Name} Export");
+                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"report_{reportId}_result.xlsx");
+            }
+        }
+
+
+
+
+
 
 
     }

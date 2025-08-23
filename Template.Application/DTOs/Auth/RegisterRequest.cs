@@ -9,6 +9,9 @@ namespace ReportsBackend.Application.DTOs.Auth
 {
     public class RegisterRequest
     {
+
+
+        public string Name { get; set; }
         //[Required(ErrorMessage = "Username is required")]
         //[StringLength(50, ErrorMessage = "Username must be between 3 and 50 characters", MinimumLength = 3)]
         public string Username { get; set; }

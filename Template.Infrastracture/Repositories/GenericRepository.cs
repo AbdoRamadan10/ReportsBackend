@@ -1,14 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using ReportsBackend.Domain.Helpers;
 using ReportsBackend.Domain.Interfaces;
 using ReportsBackend.Infrastracture.Data.Context;
 using ReportsBackend.Infrastracture.Interfaces;
-using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
 namespace ReportsBackend.Infrastracture.Repositories

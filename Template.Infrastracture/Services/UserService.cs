@@ -22,7 +22,7 @@ namespace ReportsBackend.Infrastracture.Services
         private readonly IPasswordHasher _passwordHasher; // Optional: For password hashing
         private readonly IMapper _mapper;
 
-        public UserService(ApplicationDbContext context, IPasswordHasher passwordHasher,IMapper mapper)
+        public UserService(ApplicationDbContext context, IPasswordHasher passwordHasher, IMapper mapper)
         {
             _context = context;
             _passwordHasher = passwordHasher;
@@ -45,8 +45,11 @@ namespace ReportsBackend.Infrastracture.Services
             var user = new User
             {
                 Username = request.Username,
+                Name = request.Name,
                 Email = request.Email,
                 PasswordHash = _passwordHasher.Hash(request.Password),
+                Status = true,
+
                 //Role = "User" // Default role
             };
 

@@ -35,8 +35,21 @@ namespace ReportsBackend.Infrastracture.Services.Identity
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name,user.Username.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                //new Claim(ClaimTypes.Role, user.Role)
+                //new Claim(ClaimTypes.Role, user.UserRoles.First)
+
             };
+            // Add a claim for each role
+            if (user.UserRoles != null)
+            {
+                foreach (var userRole in user.UserRoles)
+                {
+                    if (userRole.Role != null && !string.IsNullOrEmpty(userRole.Role.Name))
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
+                    }
+                }
+            }
+
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

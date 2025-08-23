@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReportsBackend.Application.DTOs.Auth;
+using ReportsBackend.Application.DTOs.Role;
 using ReportsBackend.Application.Interfaces;
 using ReportsBackend.Domain.Exceptions;
 
@@ -41,7 +42,10 @@ namespace ReportsBackend.Api.Controllers
                 {
                     Id = user.Id,
                     Username = user.Username,
-                    Email = user.Email
+                    Email = user.Email,
+                    Name = user.Name,
+                    Status = user.Status,
+
                 }
 
             });

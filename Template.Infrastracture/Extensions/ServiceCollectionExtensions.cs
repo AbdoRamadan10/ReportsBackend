@@ -34,10 +34,6 @@ namespace ReportsBackend.Infrastracture.Extensions
                 new OracleSqlExecutor(configuration.GetConnectionString("DefaultConnection")));
 
 
-
-            // Add Repositories
-            //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
             // Add Jwt Authentication
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
@@ -62,14 +58,13 @@ namespace ReportsBackend.Infrastracture.Extensions
                 };
             });
 
+
+
+
+
             services.AddScoped<ITokenService, JwtService>();
-
-            // Add Password Hasher
             services.AddScoped<IPasswordHasher, PasswordHasher>();
-
-
             services.AddScoped<IUserService, UserService>();
-
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
