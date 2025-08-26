@@ -8,7 +8,7 @@ namespace ReportsBackend.Api.Helpers
         public static byte[] GenerateTableExcel<T>(IEnumerable<T> items, List<ColumnDefinition<T>> columns, string sheetName = "Export")
         {
             using var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(sheetName);
+            var worksheet = workbook.Worksheets.Add(GetValidSheetName(sheetName));
 
             // Header
             for (int i = 0; i < columns.Count; i++)
@@ -42,7 +42,7 @@ namespace ReportsBackend.Api.Helpers
     string sheetName = "Export")
         {
             using var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(sheetName);
+            var worksheet = workbook.Worksheets.Add(GetValidSheetName(sheetName));
 
             // Header
             for (int i = 0; i < headers.Count; i++)
@@ -70,6 +70,19 @@ namespace ReportsBackend.Api.Helpers
             return stream.ToArray();
         }
 
+
+        // Add this helper method inside the class:
+        private static string GetValidSheetName(string sheetName)
+        {
+            const int maxLength = 31;
+            var invalidChars = new[] { '[', ']', '*', '?', '/', '\\', ':' };
+            var sanitized = new string(sheetName.Where(c => !invalidChars.Contains(c)).ToArray());
+            if (string.IsNullOrWhiteSpace(sanitized))
+                sanitized = "Sheet1";
+            if (sanitized.Length > maxLength)
+                sanitized = sanitized.Substring(0, maxLength);
+            return sanitized;
+        }
 
 
     }

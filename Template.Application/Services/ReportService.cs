@@ -26,9 +26,10 @@ namespace ReportsBackend.Application.Services
         public async Task<PaginatedResult<ReportDto>> GetAllAsync(FindOptions options)
         {
             var reports = await _reportRepository.GetAllAsync(options, q => q.Include(t => t.Privilege));
+            var activeReports = reports.Items.Where(r => r.Active && !r.Hide);
             return new PaginatedResult<ReportDto>
             {
-                Items = _mapper.Map<IEnumerable<ReportDto>>(reports.Items),
+                Items = _mapper.Map<IEnumerable<ReportDto>>(activeReports),
                 PageNumber = reports.PageNumber,
                 PageSize = reports.PageSize,
                 TotalCount = reports.TotalCount,

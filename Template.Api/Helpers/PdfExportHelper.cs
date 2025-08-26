@@ -96,7 +96,7 @@ namespace ReportsBackend.Api.Helpers
                         table.ColumnsDefinition(columnsDef =>
                         {
                             foreach (var _ in headers)
-                                columnsDef.RelativeColumn();
+                                columnsDef.ConstantColumn(80);
                         });
 
                         // Header row
