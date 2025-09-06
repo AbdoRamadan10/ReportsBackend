@@ -45,6 +45,15 @@ namespace ReportsBackend.Application.Services
             return _mapper.Map<ReportDto>(report);
         }
 
+        public async Task<ReportDto> GetByNameAsync(string name)
+        {
+            var reports = await _reportRepository.FindAsync(r => r.Name == name, q => q.Include(t => t.Privilege), q => q.Include(t => t.Parameters), q => q.Include(t => t.Columns));
+            var report = reports.FirstOrDefault();
+            if (report == null)
+                throw new NotFoundException("Report", name);
+            return _mapper.Map<ReportDto>(report);
+        }
+
         public async Task<ReportDto> CreateAsync(ReportCreateDto dto)
         {
             var report = _mapper.Map<Report>(dto);

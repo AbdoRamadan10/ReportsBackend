@@ -20,6 +20,7 @@ using ReportsBackend.Application.DTOs.Role;
 using ReportsBackend.Domain.AG_Grid;
 using ReportsBackend.Application.DTOs.ReportColumn;
 using ReportsBackend.Application.DTOs.ReportParameter;
+using ReportsBackend.Domain.Entities;
 
 namespace ReportsBackend.Api.Controllers
 {
@@ -158,6 +159,26 @@ namespace ReportsBackend.Api.Controllers
             return Ok(results);
         }
 
+        [HttpPost("execute-scalar")]
+        public async Task<ActionResult<List<object>>> ExecuteScalar(List<string> reportsNames)
+        {
+            if (reportsNames == null || reportsNames.Count == 0)
+                return BadRequest("No report names provided.");
+            List<object> results = new List<object>();
+            foreach (var reportName in reportsNames)
+            {
+                var report = await _reportService.GetByNameAsync(reportName);
+                if (report == null)
+                    throw new NotFoundException("Report", report.Id.ToString());
+                var sql = report.Query;
+                var reportParameters = report.Parameters;
+                var result = await _oracleExecutor.ExecuteScalarAsync(sql);
+                results.Add(result);
+            }
+
+            return Ok(results);
+        }
+
 
         [HttpGet("{reportId}/columns")]
         public async Task<ActionResult<List<ReportColumnDto>>> GetColumnsByReportId(int reportId)
@@ -230,6 +251,8 @@ namespace ReportsBackend.Api.Controllers
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"report_{reportId}_result.xlsx");
             }
         }
+
+
 
 
 
