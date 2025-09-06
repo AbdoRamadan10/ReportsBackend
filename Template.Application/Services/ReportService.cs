@@ -54,6 +54,14 @@ namespace ReportsBackend.Application.Services
             return _mapper.Map<ReportDto>(report);
         }
 
+        public async Task<List<string>> GetDashboardNames()
+        {
+            var reports = await _reportRepository.FindAsync(r => r.Category == "Dashboard" && r.Active);
+            return reports.Select(r => r.Name).ToList();
+        }
+
+
+
         public async Task<ReportDto> CreateAsync(ReportCreateDto dto)
         {
             var report = _mapper.Map<Report>(dto);

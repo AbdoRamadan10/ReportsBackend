@@ -159,24 +159,43 @@ namespace ReportsBackend.Api.Controllers
             return Ok(results);
         }
 
-        [HttpPost("execute-scalar")]
-        public async Task<ActionResult<List<object>>> ExecuteScalar(List<string> reportsNames)
-        {
-            if (reportsNames == null || reportsNames.Count == 0)
-                return BadRequest("No report names provided.");
-            List<object> results = new List<object>();
-            foreach (var reportName in reportsNames)
-            {
-                var report = await _reportService.GetByNameAsync(reportName);
-                if (report == null)
-                    throw new NotFoundException("Report", report.Id.ToString());
-                var sql = report.Query;
-                var reportParameters = report.Parameters;
-                var result = await _oracleExecutor.ExecuteScalarAsync(sql);
-                results.Add(result);
-            }
 
-            return Ok(results);
+
+        [HttpGet("dashboard-reports")]
+        public async Task<ActionResult<List<string>>> GetDashboardReports()
+        {
+
+            var dashboardReportsNames = await _reportService.GetDashboardNames();
+            return Ok(dashboardReportsNames);
+        }
+
+        [HttpPost("execute-scalar")]
+        public async Task<ActionResult<List<ScalarReportDto>>> ExecuteScalar(List<string> reportsNames)
+        {
+            var scalarResults = new List<ScalarReportDto>();
+            foreach (var name in reportsNames)
+            {
+                var report = await _reportService.GetByNameAsync(name);
+                if (report == null)
+                    throw new NotFoundException("Report", name);
+                var sql = report.Query;
+                var sqlParameters = report.Parameters;
+                sqlParameters = sqlParameters.OrderBy(p => p.Sort).ToList(); // Ensure parameters are sorted by name
+                var oracleParameters = new List<OracleParameter>();
+                foreach (var param in sqlParameters)
+                {
+                    oracleParameters.Add(new OracleParameter(param.Name, param.DataType) { Value = param.DefaultValue });
+                }
+                var scalarValue = await _oracleExecutor.ExecuteScalarAsync(sql, oracleParameters.ToArray());
+                scalarResults.Add(new ScalarReportDto
+                {
+                    Name = report.Description ?? "",
+                    Value = scalarValue?.ToString() ?? "0"
+                });
+            }
+            return Ok(scalarResults);
+
+
         }
 
 
