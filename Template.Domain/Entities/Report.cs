@@ -7,6 +7,8 @@
         public string? Description { get; set; }
         public string? Query { get; set; }
         public string? Path { get; set; }
+        public string? Category { get; set; }
+
         public bool HasDetail { get; set; } = false;
         public bool Active { get; set; } = true;
         public bool Hide { get; set; } = false;
